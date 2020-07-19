@@ -1,0 +1,159 @@
+#include <stdio.h>
+
+int main()
+{
+	int n, m, k;
+	int t;
+	int priority[401][4][4];
+	int checkmap[20][20][2];
+	int shark[401][3];
+	int cnt;
+	int dap;
+
+	scanf("%d %d %d", &n, &m, &k);
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < n; j++)
+		{
+			checkmap[i][j][0] = 0;
+			scanf("%d", &t);
+			if (t > 0)
+			{
+				checkmap[i][j][0] = k; checkmap[i][j][1] = t;
+				shark[t][1] = i;
+				shark[t][2] = j;
+			}
+		}
+	}
+
+	for (int i = 1; i <=m; i++)
+	{
+		scanf("%d", &shark[i][0]);
+	}
+
+	for (int i = 1; i <=m; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			for (int k = 0; k < 4; k++) scanf("%d", &priority[i][j][k]);
+		}
+	}
+	
+	cnt = m; dap = 0;
+	while (cnt > 1)
+	{
+		if (dap > 1000) break;
+		for (int i = 1; i <=m; i++)
+		{
+			int flag = 0;
+			
+			if (shark[i][0] == 0) continue;
+			for (int j = 0; j < 4; j++)
+			{
+				if (priority[i][shark[i][0] - 1][j] == 1)
+				{
+					if (shark[i][1] - 1 >= 0)
+					{
+						if (checkmap[shark[i][1] - 1][shark[i][2]][0] == 0)
+						{
+							shark[i][0] = 1; shark[i][1] = shark[i][1] - 1; flag = 1;
+						}
+						else if (flag == 0 && checkmap[shark[i][1] - 1][shark[i][2]][1] == i) flag = 2;
+					}
+				}
+				else if (priority[i][shark[i][0] - 1][j] == 2)
+				{
+					if (shark[i][1] + 1 <= n - 1)
+					{
+						if (checkmap[shark[i][1] + 1][shark[i][2]][0] == 0)
+						{
+							shark[i][0] = 2; shark[i][1] = shark[i][1] + 1; flag = 1;
+						}
+						else if (flag == 0 && checkmap[shark[i][1]+1][shark[i][2]][1] == i) flag = 3;
+					}
+				}
+				else if (priority[i][shark[i][0] - 1][j] == 3)
+				{
+					if (shark[i][2] - 1 >= 0)
+					{
+						if (checkmap[shark[i][1]][shark[i][2] - 1][0] == 0)
+						{
+							shark[i][0] = 3; shark[i][2] = shark[i][2] - 1; flag = 1;
+						}
+						else if (flag == 0 && checkmap[shark[i][1]][shark[i][2]-1][1] == i)
+						{
+							flag = 4;
+						}
+					}
+				}
+				else if (priority[i][shark[i][0] - 1][j] == 4)
+				{
+					if (shark[i][2] + 1 <= n - 1)
+					{
+						if (checkmap[shark[i][1]][shark[i][2] + 1][0] == 0)
+						{
+							shark[i][0] = 4; shark[i][2] = shark[i][2] + 1; flag = 1;
+						}
+						else if (flag == 0 && checkmap[shark[i][1]][shark[i][2]+1][1] == i)
+						{
+							flag = 5;
+						}
+					}
+				}
+				if (flag == 1)
+				{
+					break;
+				}
+			}
+			if (flag == 2)
+			{
+				shark[i][0] = 1; shark[i][1] = shark[i][1] - 1;
+			}
+			else if (flag == 3)
+			{
+				shark[i][0] = 2; shark[i][1] = shark[i][1] + 1;
+			}
+			else if (flag == 4)
+			{
+				shark[i][0] = 3; shark[i][2] = shark[i][2] - 1;
+			}
+			else if (flag == 5)
+			{
+				shark[i][0] = 4; shark[i][2] = shark[i][2] + 1;
+			}
+		}
+		for (int i = 1; i <= m; i++)
+		{
+			if (shark[i][0] != 0)
+			{
+				if (checkmap[shark[i][1]][shark[i][2]][0] != 0 && checkmap[shark[i][1]][shark[i][2]][1] < i && checkmap[shark[i][1]][shark[i][2]][1] >= 1)
+				{
+					shark[i][0] = 0; shark[i][1] = -1; shark[i][2] = -1;
+					cnt--;
+				}
+				else
+				{
+					checkmap[shark[i][1]][shark[i][2]][0] = k; checkmap[shark[i][1]][shark[i][2]][1] = i;
+				}
+			}
+		}
+		for (int i = 0; i < n; i++)
+		{
+			for (int j = 0; j < n; j++)
+			{
+				if (checkmap[i][j][0] != 0) checkmap[i][j][0]--;
+			}
+		}
+		for (int i = 1; i <= m; i++) checkmap[shark[i][1]][shark[i][2]][0]++;
+
+		dap++;
+	}
+	if (dap > 1000)
+	{
+		printf("-1");
+	}
+	else
+	{
+		printf("%d", dap);
+	}
+}
