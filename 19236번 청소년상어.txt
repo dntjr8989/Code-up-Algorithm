@@ -1,0 +1,100 @@
+#include <bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+#define F(i,n) for(int i=0; i<n; i++)
+int arr[5][5];
+int dx[] = { 0,-1,-1,-1,0,1,1,1 };
+int dy[] = { -1,-1,0,1,1,1,0,-1 };
+int Max;
+class F {
+public:
+	int y, x, dir;
+};
+F fish[17], shark;
+
+inline bool det(int y, int x) {
+	if (y > 3 || y < 0 || x>3 || x < 0)return true;
+	return false;
+}
+
+void movefish() {
+	for (int i = 1; i <= 16; i++) {
+		if (fish[i].dir == -1)continue;
+		int x = fish[i].x, y = fish[i].y;
+		int Dir = fish[i].dir;
+		while (1) {
+			int nx = x + dx[fish[i].dir], ny = y + dy[fish[i].dir];
+			if (det(ny, nx)) {
+				fish[i].dir = (fish[i].dir + 1) % 8;
+				if (fish[i].dir == Dir)break;
+				continue;
+			}
+			else if (arr[ny][nx] == -1) {
+				fish[i].dir = (fish[i].dir + 1) % 8;
+				if (fish[i].dir == Dir)break;
+				continue;
+			}
+
+			if (arr[ny][nx] == 0) {
+				arr[ny][nx] = i;
+				arr[y][x] = 0;
+				fish[i].y = ny;
+				fish[i].x = nx;
+				break;
+			}
+			else if (arr[ny][nx] > 0) {
+				swap(arr[ny][nx], arr[y][x]);
+				swap(fish[arr[ny][nx]], fish[arr[y][x]]);
+				swap(fish[arr[ny][nx]].dir, fish[arr[y][x]].dir);
+				break;
+			}
+		}
+	}
+}
+
+void DFS(int score) {
+	if (score > Max)Max = score;
+
+	movefish();
+
+	int temparr[5][5];
+	F tempshark;
+	F tempfish[17];
+	int temp;
+	int &y = shark.y, &x = shark.x, dir = shark.dir;
+	int tempy = y, tempx = x;
+	int DY = dy[dir], DX = dx[dir];
+	while (1) {
+		y += DY; x += DX;
+		if (det(y, x))return;
+		if (arr[y][x] > 0) {
+			memcpy(temparr, arr, sizeof(arr));
+			memcpy(tempfish, fish, sizeof(fish));
+			tempshark = shark;
+			temp = arr[y][x];
+			shark = fish[arr[y][x]];
+			fish[arr[y][x]] = { -1,-1,-1 };
+			arr[y][x] = -1;
+			arr[tempy][tempx] = 0;
+			DFS(score + temp);
+			memcpy(arr, temparr, sizeof(arr));
+			memcpy(fish, tempfish, sizeof(fish));
+			shark = tempshark;
+		}
+	}
+}
+
+int main() {
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			int a, b; cin >> a >> b;
+			arr[i][j] = a; fish[a] = { i,j,b-1 };
+		}
+	}
+	int score = arr[0][0];
+	shark = fish[arr[0][0]];
+	fish[arr[0][0]] = { 0,0,-1 }; arr[0][0] = -1;
+	//상어 위치 -1로 표현, 비어있는 경우 0
+	DFS(score);
+	cout << Max << endl;
+}
