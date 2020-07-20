@@ -1,0 +1,260 @@
+#include <stdio.h>
+
+int main()
+{
+	int n;
+	int score = 0;
+	
+	int greent[6][4] = { 0, }, bluet[4][6] = { 0, };
+	int greentop[4] = { 0, }, bluetop[4] = { 0, };
+	scanf("%d", &n);
+
+	for (int i = 0; i < 6; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			greent[i][j] = 0; bluet[j][i] = 0;
+		}
+	}
+
+	for (int i = 0; i < n; i++)
+	{
+		int t, x, y;
+		scanf("%d %d %d", &t, &x, &y);
+
+		//쌓기
+		if (t == 1)
+		{
+			greentop[y]++;
+			greent[6-greentop[y]][y] = 1;
+
+			bluetop[x]++;
+			bluet[x][6-bluetop[x]] = 1;
+		}
+		else if (t == 2)
+		{
+			if (greentop[y] < greentop[y + 1])
+			{
+				greentop[y + 1]++;
+				greentop[y] = greentop[y + 1];
+			}
+			else
+			{
+				greentop[y]++;
+				greentop[y + 1] = greentop[y];
+			}
+
+			greent[6 - greentop[y]][y] = i+2;
+			greent[6 - greentop[y + 1]][y + 1] = i+2;
+
+			bluetop[x] = bluetop[x] + 2;
+
+			bluet[x][6- bluetop[x]] = 1;
+			bluet[x][6- bluetop[x] + 1] = 1;
+		}
+		else if (t == 3)
+		{
+			greentop[y] = greentop[y] + 2;
+
+			greent[6-greentop[y]][y] = 1;
+			greent[6-greentop[y] + 1][y] = 1;
+
+			if (bluetop[x] < bluetop[x + 1])
+			{
+				bluetop[x + 1]++;
+				bluetop[x] = bluetop[x + 1];
+			}
+			else
+			{
+				bluetop[x]++;
+				bluetop[x + 1] = bluetop[x];
+			}
+			bluet[x][6-bluetop[x]] = i+2;
+			bluet[x+1][6-bluetop[x+1]] = i+2;
+		}
+		//줄 처리하기
+		for (int j = 2; j <= 5; j++)
+		{
+			int cntb = 0, cntg = 0; int flag = 0;
+
+			for (int k = 0; k < 4; k++)
+			{
+				if (greent[j][k] > 0) cntg++;
+				if (bluet[k][j] > 0) cntb++;
+			}
+			if (cntb == 0 && cntg == 0) break;
+			if (cntg == 4)
+			{
+				score++;
+				for (int k = 0; k < 4; k++)
+				{
+					greent[j][k] = 0;
+				}
+				for (int k = j - 1; k >= 0; k--)
+				{
+					for (int m = 0; m < 4; m++)
+					{
+						if (greent[k][m] == 1)
+						{
+							int o;
+							for (o = k+1; o <= 5; o++)
+							{
+								if (greent[o][m] > 0)
+								{
+									break;
+								}
+							}
+							greent[k][m] = 0;
+							greent[o - 1][m] = 1;
+						}
+						else if (greent[k][m] > 1)
+						{
+							int o;
+							for (o = k + 1; o <= 5; o++)
+							{
+								if (greent[o][m] > 0 || greent[o][m+1] > 0)
+								{
+									break;
+								}
+							}
+							greent[o - 1][m] = greent[k][m];
+							greent[o - 1][m+1] = greent[k][m+1];
+							greent[k][m] = 0; greent[k][m + 1] = 0;
+							m++;
+						}
+					}
+				}
+				flag = 1;
+			}
+			if (cntb == 4)
+			{
+				score++;
+				for (int k = 0; k < 4; k++)
+				{
+					bluet[k][j] = 0;
+				}
+				for (int k = j - 1; k >= 0; k--)
+				{
+					for (int m = 0; m < 4; m++)
+					{
+						if (bluet[m][k] == 1)
+						{
+							int o;
+							for (o = k + 1; o <= 5; o++)
+							{
+								if (bluet[m][o] > 0)
+								{
+									break;
+								}
+							}
+							bluet[m][k] = 0;
+							bluet[m][o-1] = 1;
+						}
+						else if (bluet[m][k] > 1)
+						{
+							int o;
+							for (o = k + 1; o <= 5; o++)
+							{
+								if (bluet[m][o] > 0 || bluet[m+1][o] > 0)
+								{
+									break;
+								}
+							}
+							bluet[m][o-1] = bluet[m][k];
+							bluet[m+1][o-1] = bluet[m+1][k];
+							bluet[m][k] = 0; bluet[m+1][k] = 0;
+							m++;
+						}
+					}
+				}
+				flag = 1;
+			}
+			if (flag == 1)
+			{
+				j = 2;
+				continue;
+			}
+		}
+		for (int k = 0; k < 4; k++)
+		{
+			greentop[k] = 0;
+			for (int j = 0; j < 6; j++)
+			{
+				if (greent[j][k] > 0) greentop[k] = 6 - j;
+			}
+		}
+		for (int k = 0; k < 4; k++)
+		{
+			bluetop[k] = 0;
+			for (int j = 0; j < 6; j++)
+			{
+				if (bluet[k][j] > 0) bluetop[k] = 6 - j;
+			}
+		}
+
+		int greenpush = 0, bluepush = 0;
+		for (int k = 0; k < 4; k++)
+		{
+			for (int j = 0; j < 6; j++)
+			{
+				if (greent[j][k] > 0 && greentop[k] < 6 - j)
+				{
+					greentop[k] = 6 - j;
+					if (j == 1 && greenpush != 2) greenpush = 1;
+					if (j == 0) greenpush = 2;
+				}
+				if (bluet[k][j] > 0 && bluetop[k] < 6 - j)
+				{
+					bluetop[k] = 6 - j;
+					if (j == 1 && bluepush != 2) bluepush = 1;
+					if (j == 0) bluepush = 2;
+				}
+			}
+		}
+
+		//push해야하는 경우 push
+		for (int j = 0; j < greenpush; j++)
+		{
+			for (int k = 4; k >= 0; k--)
+			{
+				for (int m = 0; m < 4; m++)
+				{
+					greent[k + 1][m] = greent[k][m];
+				}
+			}
+			greent[0][0] = 0; greent[0][1] = 0; greent[0][2] = 0; greent[0][3] = 0;
+		}
+		for (int j = 0; j < bluepush; j++)
+		{
+			for (int k = 4; k >= 0; k--)
+			{
+				for (int m = 0; m < 4; m++)
+				{
+					bluet[m][k+1] = bluet[m][k];
+				}
+			}
+			bluet[0][0] = 0; bluet[1][0] = 0; bluet[2][0] = 0; bluet[3][0] = 0;
+		}
+
+		for (int k = 0; k < 4; k++)
+		{
+			bluetop[k] = bluetop[k] - bluepush;
+			if (bluetop[k] < 0) bluetop[k] = 0;
+
+			greentop[k] = greentop[k] - greenpush;
+			if (greentop[k] < 0) greentop[k] = 0;
+		}
+	}
+	printf("%d\n", score);
+
+	int cnt = 0;
+	for (int i = 0; i < 6; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			if (bluet[j][i] > 0) cnt++;
+			if (greent[i][j] > 0) cnt++;
+		}
+	}
+	printf("%d", cnt);
+}
