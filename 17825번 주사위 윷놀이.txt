@@ -1,0 +1,221 @@
+#include <stdio.h>
+
+struct Board
+{
+	int score;
+	int nextcnt;
+	Board* next[2];
+};
+
+int maxscore;
+int dice[10];
+void moveboard(int dicei, Board* piece[4], int piecei, int score);
+
+int main()
+{
+	for (int i = 0; i < 10; i++)
+	{
+		scanf("%d", &dice[i]);
+	}
+	//Board 만들기
+	Board t[33];
+	t[0].score = 0; t[0].nextcnt = 1;  t[0].next[0] = &t[1];
+
+	t[1].score = 2; t[1].nextcnt = 1; 	t[1].next[0] = &t[2];
+	
+	t[2].score = 4;	t[2].nextcnt = 1;  t[2].next[0] = &t[3];
+
+	t[3].score = 6;	t[3].nextcnt = 1;  t[3].next[0] = &t[4];
+
+	t[4].score = 8;	t[4].nextcnt = 1; t[4].next[0] = &t[5];
+
+	t[5].score = 10; t[5].nextcnt = 2; t[5].next[0] = &t[22]; t[5].next[1] = &t[6];
+
+	t[6].score = 12; t[6].nextcnt = 1; t[6].next[0] = &t[7];
+
+	t[7].score = 14; t[7].nextcnt = 1; t[7].next[0] = &t[8];
+
+	t[8].score = 16; t[8].nextcnt = 1; t[8].next[0] = &t[9];
+
+	t[9].score = 18; t[9].nextcnt = 1; t[9].next[0] = &t[10];
+
+	t[10].score = 20; t[10].nextcnt = 2; t[10].next[0] = &t[28]; t[10].next[1] = &t[11];
+
+	t[11].score = 22; t[11].nextcnt = 1; t[11].next[0] = &t[12];
+
+	t[12].score = 24; t[12].nextcnt = 1; t[12].next[0] = &t[13];
+
+	t[13].score = 26; t[13].nextcnt = 1; t[13].next[0] = &t[14];
+
+	t[14].score = 28; t[14].nextcnt = 1; t[14].next[0] = &t[15];
+
+	t[15].score = 30; t[15].nextcnt = 2; t[15].next[0] = &t[30]; t[15].next[1] = &t[16];
+
+	t[16].score = 32; t[16].nextcnt = 1; t[16].next[0] = &t[17];
+
+	t[17].score = 34; t[17].nextcnt = 1; t[17].next[0] = &t[18];
+
+	t[18].score = 36; t[18].nextcnt = 1; t[18].next[0] = &t[19];
+
+	t[19].score = 38; t[19].nextcnt = 1; t[19].next[0] = &t[20];
+
+	t[20].score = 40; t[20].nextcnt = 1; t[20].next[0] = &t[21];
+	
+	t[21].score = -1; t[21].nextcnt = 0;
+
+	t[22].score = 13; t[22].nextcnt = 1; t[22].next[0] = &t[23];
+
+	t[23].score = 16; t[23].nextcnt = 1; t[23].next[0] = &t[24];
+
+	t[24].score = 19; t[24].nextcnt = 1; t[24].next[0] = &t[25];
+
+	t[25].score = 25; t[25].nextcnt = 1; t[25].next[0] = &t[26];
+
+	t[26].score = 30; t[26].nextcnt = 1; t[26].next[0] = &t[27];
+
+	t[27].score = 35; t[27].nextcnt = 1; t[27].next[0] = &t[20];
+
+	t[28].score = 22; t[28].nextcnt = 1; t[28].next[0] = &t[29];
+
+	t[29].score = 24; t[29].nextcnt = 1; t[29].next[0] = &t[25];
+
+	t[30].score = 28; t[30].nextcnt = 1; t[30].next[0] = &t[31];
+
+	t[31].score = 27; t[31].nextcnt = 1; t[31].next[0] = &t[32];
+
+	t[32].score = 26; t[32].nextcnt = 1; t[32].next[0] = &t[25];
+
+	//
+	Board* piece[4];
+	piece[0] = &t[0];
+	piece[1] = &t[0];
+	piece[2] = &t[0];
+	piece[3] = &t[0];
+
+	moveboard(0, piece, 0, 0);
+
+	printf("%d", maxscore);
+}
+
+void moveboard(int dicei, Board* piece[4], int piecei, int score)
+{
+	//종료조건
+	if (dicei == 10)
+	{
+		if (maxscore < score)
+		{
+			maxscore = score;
+		}
+		return;
+	}
+
+	//piece배열 옮기기
+
+	Board* piecet[4];
+	for (int i = 0; i < 4; i++)
+	{
+		piecet[i] = piece[i];
+	}
+	//
+	if (dicei == 0)
+	{
+		for (int i = 0; i < dice[dicei]; i++)
+		{
+			if (piecet[0]->nextcnt == 2 && i != 0)
+			{
+				piecet[0] = piecet[0]->next[1];
+			}
+			else
+			{
+				piecet[0] = piecet[0]->next[0];
+			}
+		}
+		moveboard(1, piecet, 1, score + piecet[0]->score);
+	}
+	else
+	{
+		//말을 추가하는 경우
+		if (piecei <= 3)
+		{
+			for (int i = 0; i < dice[dicei]; i++)
+			{
+				if (piecet[piecei]->nextcnt == 2 && i != 0)
+				{
+					piecet[piecei] = piecet[piecei]->next[1];
+				}
+				else
+				{
+					piecet[piecei] = piecet[piecei]->next[0];
+				}
+			}
+			int i;
+			for (i = 0; i < piecei; i++)
+			{
+				if (piecet[i] == piecet[piecei])
+				{
+					break;
+				}
+			}
+			if (i == piecei)
+			{
+				moveboard(dicei + 1, piecet, piecei + 1, score + piecet[piecei]->score);
+			}
+		}
+		for (int i = 0; i < 4; i++)
+		{
+			piecet[i] = piece[i];
+		}
+
+		//말을 추가하지 않는 경우 
+		for (int i = 0; i < piecei; i++)
+		{
+			if (piecet[i]->score == -1) continue;
+
+			int j;
+			
+			for (j = 0; j < dice[dicei]; j++)
+			{
+				if (piecet[i]->score == -1) break;
+				if (piecet[i]->nextcnt == 2 && j != 0)
+				{
+					piecet[i] = piecet[i]->next[1];
+				}
+				else
+				{
+					piecet[i] = piecet[i]->next[0];
+				}
+			}
+			int k;
+			for (k = 0; k < piecei; k++)
+			{
+				if (k != i)
+				{
+					if (piecet[i] == piecet[k] && piecet[i]->score != -1)
+					{
+						break;
+					}
+				}
+			}
+			if (k != piecei)
+			{
+				for (j = 0; j < 4; j++)
+				{
+					piecet[j] = piece[j];
+				}
+				continue;
+			}
+			if (j == dice[dicei])
+			{
+				moveboard(dicei + 1, piecet, piecei, score + piecet[i]->score);
+			}
+			else
+			{
+				moveboard(dicei + 1, piecet, piecei, score);
+			}
+			for (j = 0; j < 4; j++)
+			{
+				piecet[j] = piece[j];
+			}
+		}
+	}
+}
