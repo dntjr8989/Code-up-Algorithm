@@ -1,0 +1,138 @@
+#include <stdio.h>
+
+
+int n, m, t;
+int xdk[50][3];
+int circle[50][50];
+
+int checkadjacent(int y, int x, int score, int find);
+
+int main()
+{
+
+	//입력
+	scanf("%d %d %d", &n, &m, &t);
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < m; j++)
+		{
+			scanf("%d", &circle[i][j]);
+		}
+	}
+	for (int i = 0; i < t; i++)
+	{
+		scanf("%d %d %d", &xdk[i][0], &xdk[i][1], &xdk[i][2]);
+	}
+
+	for (int i = 0; i < t; i++)
+	{
+		//회전
+		for (int j = xdk[i][0] - 1; j < n; j = j + xdk[i][0])
+		{
+			//시계
+			if (xdk[i][1] == 0)
+			{
+				for (int l = 0; l < xdk[i][2]; l++)
+				{
+					int t = circle[j][m - 1];
+					for (int k = m - 2; k >= 0; k--)
+					{
+						circle[j][k + 1] = circle[j][k];
+					}
+					circle[j][0] = t;
+				}
+			}
+			//반시계
+			else
+			{
+				for (int l = 0; l < xdk[i][2]; l++)
+				{
+					int t = circle[j][0];
+					for (int k = 0; k < m - 1; k++)
+					{
+						circle[j][k] = circle[j][k + 1];
+					}
+					circle[j][m - 1] = t;
+				}
+			}
+		}
+		//인접한 것 검사
+		int flag = 0;
+		int sum = 0;
+		int cnt = 0;
+		for (int j = 0; j < n; j++)
+		{
+			for (int k = 0; k < m; k++)
+			{
+				sum += circle[j][k];
+
+				if (circle[j][k] == 0) continue;
+
+				cnt++;
+
+				int t = circle[j][k];
+
+				if (checkadjacent(j, k, circle[j][k], 0) == 1)
+				{
+					circle[j][k] = 0;
+					flag = 1;
+				}
+				else
+				{
+					circle[j][k] = t;
+				}
+			}
+		}
+		//없는 경우	평균 값 구해서 평균보다 큰 값 -1, 작은 값 +1
+		if (flag == 0)
+		{
+			float mean = (float)sum / cnt;
+			for (int j = 0; j < n; j++)
+			{
+				for (int k = 0; k < m; k++)
+				{
+					if (circle[j][k] != 0)
+					{
+						if ((float)circle[j][k] < mean)
+						{
+							circle[j][k] = circle[j][k] + 1;
+						}
+						else if ((float)circle[j][k] > mean)
+						{
+							circle[j][k] = circle[j][k] - 1;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	int sum = 0;
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < m; j++)
+		{
+			sum = sum + circle[i][j];
+		}
+	}
+	printf("%d", sum);
+}
+
+int checkadjacent(int y, int x, int score, int find)
+{
+	if (y < 0 || y > n - 1)
+	{
+		if (find <= 1)return 0;
+		else return 1;
+	}
+
+	if (circle[y][x] != score)
+	{
+		if (find <= 1) return 0;
+		else return 1;
+	}
+	
+	circle[y][x] = 0;
+
+	return (checkadjacent(y - 1, x, score, find+1) | checkadjacent(y + 1, x, score, find+1) | checkadjacent(y, (x + 1) % m, score, find+1) | checkadjacent(y, (x + m - 1) % m, score, find+1));
+}
