@@ -1,0 +1,170 @@
+#include <stdio.h>
+#include <vector>
+
+using namespace std;
+
+struct Piece
+{
+	int y;
+	int x;
+	int direction;
+};
+
+int n, k;
+int map[13][13];
+vector <Piece> piece;
+vector <int> pieceyx[13][13];
+
+int movey[5] = {0, 0, 0, -1, 1 };
+int movex[5] = {0, 1, -1, 0, 0 };
+
+int changedir(int x);
+
+int main()
+{
+	//입력
+	scanf("%d %d", &n, &k);
+	for (int i = 1; i <= n; i++)
+	{
+		for (int j = 1; j <= n; j++)
+		{
+			scanf("%d", &map[i][j]);
+		}
+	}
+	for (int i = 0; i < k; i++)
+	{
+		Piece t;
+		scanf("%d %d %d", &t.y, &t.x, &t.direction);
+		piece.push_back(t);
+		pieceyx[t.y][t.x].push_back(i);
+	}
+
+	//
+	int i;
+	for (i = 1; i <= 1000; i++)
+	{
+		for (int j = 0; j < k; j++)
+		{
+			int yy = piece[j].y + movey[piece[j].direction];
+			int xx = piece[j].x + movex[piece[j].direction];
+
+			//파란색
+			if (yy <= 0 || yy >= n+1 || xx <= 0 || xx >= n+1 || map[yy][xx] == 2)
+			{
+				piece[j].direction = changedir(piece[j].direction);
+				
+				yy = piece[j].y + movey[piece[j].direction];
+				xx = piece[j].x + movex[piece[j].direction];
+
+				if (yy <= 0 || yy >= n+1 || xx <= 0 || xx >= n+1 || map[yy][xx] == 2) continue;
+
+				if (map[yy][xx] == 1)
+				{
+					//리버스
+					vector<int> t;
+					int n = pieceyx[piece[j].y][piece[j].x].size();
+					while (pieceyx[piece[j].y][piece[j].x][n - 1] != j)
+					{
+						t.push_back(pieceyx[piece[j].y][piece[j].x][n - 1]);
+						pieceyx[piece[j].y][piece[j].x].pop_back();
+						n--;
+					}
+					t.push_back(j);
+					pieceyx[piece[j].y][piece[j].x].pop_back();
+
+					for (int p = 0; p < t.size(); p++)
+					{
+						piece[t[p]].y = yy;
+						piece[t[p]].x = xx;
+						pieceyx[yy][xx].push_back(t[p]);
+					}
+				}
+				else
+				{
+					vector<int> t;
+					int n = pieceyx[piece[j].y][piece[j].x].size();
+					while (pieceyx[piece[j].y][piece[j].x][n - 1] != j)
+					{
+						t.push_back(pieceyx[piece[j].y][piece[j].x][n - 1]);
+						pieceyx[piece[j].y][piece[j].x].pop_back();
+						n--;
+					}
+					t.push_back(j);
+					pieceyx[piece[j].y][piece[j].x].pop_back();
+
+					for (int p = t.size() - 1; p >= 0; p--)
+					{
+						piece[t[p]].y = yy;
+						piece[t[p]].x = xx;
+						pieceyx[yy][xx].push_back(t[p]);
+					}
+				}
+			}
+			//빨간색
+			else if (map[yy][xx] == 1)
+			{
+				//리버스
+				vector<int> t;
+				int n = pieceyx[piece[j].y][piece[j].x].size();
+				while (pieceyx[piece[j].y][piece[j].x][n-1] != j)
+				{
+					t.push_back(pieceyx[piece[j].y][piece[j].x][n-1]);
+					pieceyx[piece[j].y][piece[j].x].pop_back();
+					n--;
+				}
+				t.push_back(j);
+				pieceyx[piece[j].y][piece[j].x].pop_back();
+
+				for (int p = 0; p < t.size(); p++)
+				{
+					piece[t[p]].y = yy;
+					piece[t[p]].x = xx;
+					pieceyx[yy][xx].push_back(t[p]);
+				}
+			}
+			//흰색 (move)
+			else if (map[yy][xx] == 0)
+			{
+				vector<int> t;
+				int n = pieceyx[piece[j].y][piece[j].x].size();
+				while (pieceyx[piece[j].y][piece[j].x][n - 1] != j)
+				{
+					t.push_back(pieceyx[piece[j].y][piece[j].x][n - 1]);
+					pieceyx[piece[j].y][piece[j].x].pop_back();
+					n--;
+				}
+				t.push_back(j);
+				pieceyx[piece[j].y][piece[j].x].pop_back();
+
+				for (int p = t.size() - 1; p >= 0; p--)
+				{
+					piece[t[p]].y = yy;
+					piece[t[p]].x = xx;
+					pieceyx[yy][xx].push_back(t[p]);
+				}
+			}
+
+			for (int j = 1; j <= n; j++)
+			{
+				for (int p = 1; p <= n; p++)
+				{
+					if (pieceyx[j][p].size() > 3)
+					{
+						printf("%d", i);
+						return 0;
+					}
+				}
+			}
+		}
+	}
+	printf("-1");
+	return 0;
+}
+
+int changedir(int x)
+{
+	if (x == 1) return 2;
+	if (x == 2) return 1;
+	if (x == 3) return 4;
+	if (x == 4) return 3;
+}
