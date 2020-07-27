@@ -1,0 +1,141 @@
+#include <stdio.h>
+
+int n;
+int A[20][20];
+
+int divide(int y, int x, int d2, int d1);
+
+int main()
+{
+
+	//입력
+	scanf("%d", &n);
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < n; j++)
+		{
+			scanf("%d", &A[i][j]);
+		}
+	}
+	
+	int min = 99999999;
+	for (int y = 0; y < n; y++)
+	{
+		for (int x = 0; x < n; x++)
+		{
+			int d1 = 1;
+			while (1)
+			{
+				int d2 = 1;
+				if (x + d1 + d2 >= n || y-d1 < 0 || y+d2 >= n) break;
+				while (1)
+				{
+					if (x + d1 + d2 >= n || y + d2 >= n) break;
+					int t = divide(y, x, d2, d1);
+					if (t < min)
+					{
+						min = t;
+					}
+					d2++;
+				}
+				d1++;
+			}
+		}
+	}
+	printf("%d", min);
+	
+	return 0;
+}
+
+int divide(int y, int x, int d2, int d1)
+{
+	int section[20][20] = { 0, };
+	int sum[6] = { 0, };
+
+	//section나누기
+	
+	//5번 구역
+	for (int i = 0; i <= d2; i++)
+	{
+		int ty = y + i;
+		int tx = x + i;
+
+		for (int j = 0; j <= d1; j++)
+		{
+			section[ty][tx] = 5;
+			sum[5] = sum[5] + A[ty][tx];
+			ty = ty - 1;
+			tx = tx + 1;
+		}
+	}
+	for (int i = 0; i <=d2 - 1; i++)
+	{
+		int ty = y + i;
+		int tx = x + 1 + i;
+		for (int j = 0; j <= d1 - 1; j++)
+		{
+			section[ty][tx] = 5;
+			sum[5] = sum[5] + A[ty][tx];
+			ty = ty - 1;
+			tx = tx + 1;
+		}
+	}
+	//1번구역
+	for (int i = 0; i < y; i++)
+	{
+		for (int j = 0; j <= x + d1; j++)
+		{
+			if (section[i][j] != 5)
+			{
+				sum[1] = sum[1] + A[i][j];
+				section[i][j] = 1;
+			}
+		}
+	}
+	//2번구역
+	for (int i = 0; i <= y + d2 - d1; i++)
+	{
+		for (int j = x + d1 + 1; j < n; j++)
+		{
+			if (section[i][j] != 5)
+			{
+				sum[2] = sum[2] + A[i][j];
+				section[i][j] = 2;
+			}
+		}
+	 }
+	//3번구역
+	for (int i = y; i < n; i++)
+	{
+		for (int j = 0; j < x + d2; j++)
+		{
+			if (section[i][j] != 5)
+			{
+				sum[3] = sum[3] + A[i][j];
+				section[i][j] = 3;
+			}
+		}
+	}
+	//4번구역
+	for (int i = y-d1+d2+1; i < n; i++)
+	{
+		for (int j = x + d2; j < n; j++)
+		{
+			if (section[i][j] != 5)
+			{
+				sum[4] = sum[4] + A[i][j];
+				section[i][j] = 4;
+			}
+		}
+	}
+	int max = sum[1];
+	int min = sum[1];
+
+	for (int i = 2; i <= 5; i++)
+	{
+		if (max < sum[i]) max = sum[i];
+		if (min > sum[i]) min = sum[i];
+	}
+	
+	return max - min;
+}
