@@ -1,0 +1,162 @@
+#include <stdio.h>
+#include <algorithm>
+
+using namespace std;
+
+int N, M;
+int map[50][50];
+
+struct Virus
+{
+	int y;
+	int x;
+	int s;
+};
+
+int cntblank = 0;
+Virus v[10];
+
+int main()
+{
+	//입력
+	scanf("%d %d", &N, &M);
+
+	int vi = 0;
+
+	for (int i = 0; i < N; i++)
+	{
+		for (int j = 0; j < N; j++)
+		{
+			scanf("%d", &map[i][j]);
+			if (map[i][j] == 0) cntblank++;
+			if (map[i][j] == 2)
+			{
+				v[vi].y = i; v[vi].x = j; v[vi].s = 0;
+				vi++;
+			}
+		}
+	}
+
+	//
+	int min = 999999;
+
+	bool Select[10] = { false, };
+	for (int i = 0; i < M; i++) Select[i] = true;
+
+	do {
+		if (cntblank == 0) {
+			min = 0;  break;
+		}
+
+		bool mapcheck[50][50] = { false, };
+
+		//queue 초기값 설정(바이러스 고르기)
+		Virus queue[2500];
+		int front = 0, rear = 0;
+		for (int i = 0; i < vi; i++)
+		{
+			if (Select[i])
+			{
+				queue[rear] = v[i]; rear++;
+				mapcheck[v[i].y][v[i].x] = true;
+			}
+		}
+
+		int second = 0;
+
+		//BFS
+		int cnt = M; int cntv = 0;
+		bool flag = false;
+		while (1)
+		{
+			while (queue[front].s == second)
+			{
+				//상하좌우로 바이러스
+				int y = queue[front].y; int x = queue[front].x;
+				//상
+				if (y - 1 >= 0 && map[y - 1][x] != 1)
+				{
+					if (mapcheck[y - 1][x] == false)
+					{
+						if (map[y - 1][x] == 2) cnt++;
+						else cntv++;
+						mapcheck[y - 1][x] = true;
+						queue[rear].y = y-1;
+						queue[rear].x = x;
+						queue[rear].s = second + 1;
+						rear++;
+					}
+				}
+				//하
+				if (y+1 <= N-1 && map[y+1][x] != 1)
+				{
+					if (mapcheck[y+1][x] == false)
+					{
+						if (map[y + 1][x] == 2) cnt++;
+						else cntv++;
+						mapcheck[y+1][x] = true;
+						queue[rear].y = y+1;
+						queue[rear].x = x;
+						queue[rear].s = second + 1;
+						rear++;
+
+					}
+				}
+				//좌
+				if (x - 1 >= 0 && map[y][x-1] != 1)
+				{
+					if (mapcheck[y][x-1] == false)
+					{
+						if (map[y][x - 1] == 2) cnt++;
+						else cntv++;
+						mapcheck[y][x-1] = true;
+						queue[rear].y = y;
+						queue[rear].x = x-1;
+						queue[rear].s = second + 1;
+						rear++;
+					}
+				}
+				//우
+				if (x+1 <= N-1 && map[y][x+1] != 1)
+				{
+					if (mapcheck[y][x+1] == false)
+					{
+						if (map[y][x + 1] == 2) cnt++;
+						else cntv++;
+						mapcheck[y][x+1] = true;
+						queue[rear].y = y;
+						queue[rear].x = x+1;
+						queue[rear].s = second + 1;
+						rear++;
+					}
+				}
+				front++;
+			}
+			
+			second++;
+		
+			//종료조건
+			if (second >= min) break;
+
+			if (cntv == cntblank) break;
+			else if (front >= rear)
+			{
+				second = -1; 
+				if (cnt == vi) flag = true;
+				break;
+			}
+		}
+		if (flag == true) break;
+		if (min > second && second != -1) min = second;
+	} while (prev_permutation(Select, Select + vi)); //prev_permutation 활용
+
+	if (min == 999999)
+	{
+		printf("-1");
+	}
+	else
+	{
+		printf("%d", min);
+	}
+	return 0;
+}
