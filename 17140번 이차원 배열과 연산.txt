@@ -1,0 +1,121 @@
+#include <stdio.h>
+#include <string.h>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+vector<vector<int> > map;
+int mapy = 3;
+int mapx = 3;
+
+struct vc {
+    int value;
+    int cnt;
+};
+
+bool cmp(vc s1, vc s2) {
+    if (s1.cnt != s2.cnt)
+        return s1.cnt < s2.cnt;
+    else
+        return s1.value < s2.value;
+
+}
+
+int main() {
+
+    int r, c, k;
+
+    map = vector<vector<int> >(100, vector<int>(100, 0));
+    
+    scanf("%d %d %d", &r, &c, &k);
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 3; j++)
+        {
+            scanf("%d", &map[i][j]);
+        }
+    }
+    
+    int time = -1;
+    
+    for(int i=0; i<=100; i++)
+    {
+        if (map[r - 1][c - 1] == k)
+        {
+            time = i;  break;
+        }
+        
+        int check[101] = { 0, };
+        
+        //R연산
+        if (mapy >= mapx) {
+            for (int j = 0; j < mapy; j++) {
+
+                memset(check, 0, sizeof(check));
+
+                for (int k = 0; k < mapx; k++) {
+                    check[map[j][k]]++;
+                    map[j][k] = 0;
+                }
+
+                vector<vc> t;
+                for (int k = 1; k <= 100; k++) {
+                    if (check[k]) {
+                        vc tt;
+                        tt.value = k; tt.cnt = check[k];
+                        t.push_back(tt);
+                    }
+                }
+
+                sort(t.begin(), t.end(), cmp);
+                for (int l = 0, k = 0; l < t.size(); l++, k += 2) {
+                    map[j][k] = t[l].value;
+                    map[j][k + 1] = t[l].cnt;
+                }
+            }
+        }
+        else {    //C연산
+
+            for (int j = 0; j < mapx; j++) {
+
+                memset(check, 0, sizeof(check));
+                for (int k = 0; k < mapy; k++) {
+                    check[map[k][j]]++;
+                    map[k][j] = 0;
+                }
+
+                vector<vc> t;
+                for (int k = 1; k <= 100; k++) {
+                    if (check[k]) {
+                        vc tt;
+                        tt.value = k; tt.cnt = check[k];
+                        t.push_back(tt);
+                    }
+                }
+
+                sort(t.begin(), t.end(), cmp);
+
+                for (int l = 0, k = 0; l < t.size(); l++, k += 2) {
+                    map[k][j] = t[l].value;
+                    map[k + 1][j] = t[l].cnt;
+                }
+
+            }
+        }
+        //y,x길이 설정
+        int yy = 0;
+        int xx = 0;
+        for (int j = 0; j < 100; j++) {
+            for (int k = 0; k < 100; k++) {
+                if (map[j][k] > 0) {
+                    yy = max(yy, j);
+                    xx = max(xx, k);
+                }
+            }
+        }
+        mapy = yy+1;
+        mapx = xx+1;
+    }
+    printf("%d", time);
+    return 0;
+}
