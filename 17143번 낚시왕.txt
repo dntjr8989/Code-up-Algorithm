@@ -1,0 +1,150 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+struct Shark
+{
+	int r, c, s, d, z; //(r, c)상어 위치, s : 속력, d : 이동방향, z : 크기
+};
+
+int R, C, M; //R : 행, C : 열, M : 상어 수
+vector<Shark> sharks;
+int row[101] = { 0, };
+int moveY[5] = {0, -1, 1, 0, 0};
+int moveX[5] = {0, 0, 0, 1, -1};
+
+int changedir(int x)
+{
+	if (x == 1) return 2;
+	if (x == 2) return 1;
+	if (x == 3) return 4;
+	if (x == 4) return 3;
+};
+
+bool cmp(Shark t1, Shark t2)
+{
+	if (t1.c < t2.c) return true;
+	else if (t1.c == t2.c)
+	{
+		if (t1.r < t2.r) return true;
+		else if (t1.r == t2.r)
+		{
+			if (t1.z > t2.z) return true;
+			else return false;
+		}
+		else return false;
+	}
+	else return false;
+};
+
+int main()
+{
+	//입력
+	cin >> R >> C >> M;
+	for (int i = 0; i < M; i++)
+	{
+		Shark t;
+		cin >> t.r >> t.c >> t.s >> t.d >> t.z;
+		if (t.d >= 3)
+		{
+			t.s = t.s % (2 * C - 2);
+		}
+		else if (t.d <= 2)
+		{
+			t.s = t.s % (2 * R - 2);
+		}
+		sharks.push_back(t);
+		row[t.c]++;
+	}
+	sort(sharks.begin(), sharks.end(), cmp);
+
+	int sum = 0; int flag = 0;
+	for (int i = 1; i <= C; i++)
+	{
+		//상어 잡기
+		if (row[i] != 0)
+		{
+			int sharkt = 0;
+			for (int j = 0; j < i; j++)
+			{
+				sharkt = sharkt + row[j];
+			}
+
+			sum = sum + sharks[sharkt].z;
+			row[sharks[sharkt].c]--;
+			//상어 없으면 break
+			if (sharks.size() == 1) {
+				flag = 1;  break;
+			}
+			sharks.erase(sharks.begin() + sharkt);
+		}
+		if (flag == 1)
+		{
+			break;
+		}
+
+		//상어 움직이기
+		for (int j = 0; j < sharks.size(); j++)
+		{
+			row[sharks[j].c]--;
+
+			for (int k = 0; k < sharks[j].s; k++)
+			{
+				int dy = moveY[sharks[j].d];
+				int dx = moveX[sharks[j].d];
+			
+				//상어 방향 바꿔야하는 경우
+				if (sharks[j].r + dy <= 0 || sharks[j].r + dy > R || sharks[j].c + dx <= 0 || sharks[j].c + dx > C)
+				{
+					sharks[j].d = changedir(sharks[j].d);
+					k = k - 1; continue;
+				}
+				sharks[j].r = sharks[j].r + dy;
+				sharks[j].c = sharks[j].c + dx;
+			}
+			row[sharks[j].c]++;
+		}
+
+		//정렬
+		sort(sharks.begin(), sharks.end(), cmp);
+
+		//같은 칸에 있으면 먹히기
+		for (int j = 1; j < sharks.size(); j++)
+		{
+			if (sharks[j].r == sharks[j - 1].r && sharks[j].c == sharks[j - 1].c)
+			{
+				row[sharks[j].c]--;
+				//상어 없는 지 확인
+				if (sharks.size() == 1)
+				{
+					flag = 1; break;
+				}
+				sharks.erase(sharks.begin() + j);
+				j--;
+				continue;
+			}
+		}
+		if (flag == 1) break;
+
+		//그만 둘 조건
+		int check = 0;
+		int checki = -1;
+		for (int j = 0; j < sharks.size(); j++)
+		{
+			if (sharks[j].d >= 3) check = 1;
+			else
+			{
+				if (checki < sharks[j].c)
+				{
+					checki = sharks[j].c;
+				}
+			}
+		}
+		if (check == 0 && checki <= i) break;
+	}
+	//출력
+	cout << sum;
+	return 0;
+}
