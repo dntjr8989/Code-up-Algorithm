@@ -1,0 +1,136 @@
+#include <iostream>
+#include <string.h>
+
+using namespace std;
+
+int main()
+{
+	int R, C, T;
+	int map[50][50];
+	int mapadd[50][50];
+	int cleany = -1;
+
+	//입력
+	cin >> R >> C >> T;
+	
+	for (int i = 0; i < R; i++)
+	{
+		for (int j = 0; j < C; j++)
+		{
+			cin >> map[i][j];
+			if (map[i][j] == -1 && cleany == -1)
+			{
+				cleany = i;
+			}
+		}
+	}
+
+	for (int i = 1; i <= T; i++)
+	{
+		memset(mapadd, 0, sizeof(mapadd));
+		//먼지 퍼짐
+		for (int j = 0; j < R; j++)
+		{
+			for (int k = 0; k < C; k++)
+			{
+				if (map[j][k] > 0)
+				{
+					int cnt = 0;
+					//상
+					if (j - 1 >= 0 && map[j - 1][k] != -1)
+					{
+						mapadd[j - 1][k] += map[j][k] / 5;
+						cnt++;
+					}
+					//하
+					if (j + 1 < R && map[j + 1][k] != -1)
+					{
+						mapadd[j + 1][k] += map[j][k] / 5;
+						cnt++;
+					}
+					//좌
+					if (k-1 >= 0 && map[j][k-1] != -1)
+					{
+						mapadd[j][k-1] += map[j][k] / 5;
+						cnt++;
+					}
+					//우
+					if (k+1 < C && map[j][k+1] != -1)
+					{
+						mapadd[j][k+1] += map[j][k] / 5;
+						cnt++;
+					}
+					map[j][k] = map[j][k] - (map[j][k] / 5) * cnt;
+				}
+			}
+			if (j >= 2)
+			{
+				for (int k = 0; k < C; k++)
+				{
+					map[j - 2][k] += mapadd[j - 2][k];
+				}
+			}
+		}
+		for (int j = R - 2; j < R; j++)
+		{
+			for (int k = 0; k < C; k++)
+			{
+				map[j][k] += mapadd[j][k];
+			}
+		}
+		//공기청정기 작동
+		
+		//반시계(위쪽)
+		for (int y = cleany - 2; y >= 0; y--)
+		{
+			map[y + 1][0] = map[y][0];
+		}
+		
+		for (int x = 1; x < C; x++)
+		{
+			map[0][x - 1] = map[0][x];
+		}
+		for (int y = 1; y <= cleany; y++)
+		{
+			map[y - 1][C - 1] = map[y][C - 1];
+		}
+		for (int x = C - 1; x >= 1; x--)
+		{
+			map[cleany][x] = map[cleany][x - 1];
+		}
+		map[cleany][1] = 0;
+		
+		//시계(아래쪽)
+		for (int y = cleany + 2; y < R; y++)
+		{
+			map[y][0] = map[y + 1][0];
+		}
+		for (int x = 0; x < C - 1; x++)
+		{
+			map[R - 1][x] = map[R - 1][x + 1];
+		}
+		for (int y = R - 1; y >= cleany + 2; y--)
+		{
+			map[y][C - 1] = map[y - 1][C - 1];
+		}
+		for (int x = C - 1; x >= 1; x--)
+		{
+			map[cleany + 1][x] = map[cleany + 1][x - 1];
+		}
+		map[cleany + 1][1] = 0;
+	}
+	int sum = 0;
+
+	for (int i = 0; i < R; i++)
+	{
+		for (int j = 0; j < C; j++)
+		{
+			if (map[i][j] != -1)
+			{
+				sum += map[i][j];
+			}
+		}
+	}
+	//출력
+	cout << sum;
+}
