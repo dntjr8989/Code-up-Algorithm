@@ -1,0 +1,128 @@
+#include <iostream>
+
+using namespace std;
+
+struct YX
+{
+	int y;
+	int x;
+	int distance;
+	int size;
+	int eatcnt;
+};
+
+int N;
+YX shark;
+int map[20][20];
+
+int moveY[4] = { -1, 0, 0, 1 }; //상 좌 우 하
+int moveX[4] = { 0, -1, 1, 0 };
+
+YX findfish()
+{
+	YX fish;
+	int front = 0, rear = 0;
+	YX queue[400];
+	bool checkmap[20][20] = { false };
+	checkmap[shark.y][shark.x] = true;
+
+	for (int i = 0; i < 4; i++)
+	{
+		YX t;
+		t.y = shark.y + moveY[i]; t.x = shark.x + moveX[i];
+		if (t.y >= 0 && t.y < N && t.x >= 0 && t.x < N)
+		{
+			if (map[t.y][t.x] <= shark.size)
+			{
+				t.size = map[t.y][t.x];
+				checkmap[t.y][t.x] = true;
+				t.distance = 1;
+				queue[rear] = t;
+				rear++;
+			}
+		}
+	}
+	fish.y = 999; fish.x = 999; fish.distance = 9999;
+	while (front < rear && queue[front].distance <= fish.distance && queue[front].distance < N*N)
+	{
+		//먹을 수 있는 물고기인가?
+		if (queue[front].size > 0 && queue[front].size < shark.size)
+		{
+			if (fish.distance >= queue[front].distance)
+			{
+				if (fish.y > queue[front].y) fish = queue[front];
+				else if (fish.y == queue[front].y)
+				{
+					if (fish.x > queue[front].x) fish = queue[front];
+				}
+			}
+			front++;
+			continue;
+		}
+		//크기가 같은 물고기(그냥 지나감)
+		for (int i = 0; i < 4; i++)
+		{
+			YX t;
+			t.y = queue[front].y + moveY[i]; t.x = queue[front].x + moveX[i];
+			if (t.y >= 0 && t.y < N && t.x >= 0 && t.x < N)
+			{
+				if (map[t.y][t.x] <= shark.size && checkmap[t.y][t.x] == false)
+				{
+					t.size = map[t.y][t.x];
+					t.distance = queue[front].distance + 1;
+					checkmap[t.y][t.x] = true;
+					queue[rear] = t;
+					rear++;
+				}
+			}
+		}
+		front++;
+	}
+
+	return fish;
+};
+
+int main()
+{
+	//입력
+	cin >> N;
+	for (int i = 0; i < N; i++)
+	{
+		for (int j = 0; j < N; j++)
+		{
+			cin >> map[i][j];
+			if (map[i][j] == 9)
+			{
+				shark.y = i; shark.x = j; shark.size = 2;
+				shark.distance = 0; shark.eatcnt = 0;
+			}
+		}
+	}
+	//상어로부터 거리계산
+	int time = 0;
+	while (1)
+	{
+		YX t;
+		//먹을 수 있는 물고기찾기
+		t = findfish();
+
+		//종료조건 (먹을 수 있는 물고기 없다.)
+		if (t.y == 999 && t.x == 999) break;
+
+		//시간 추가
+		time = time + t.distance;
+
+		//맵 바꾸기
+		map[shark.y][shark.x] = 0;
+		map[t.y][t.x] = 9;
+		shark.y = t.y; shark.x = t.x;
+		shark.eatcnt++;
+		if (shark.eatcnt == shark.size)
+		{
+			shark.eatcnt = 0;
+			shark.size++;
+		}
+	}
+	cout << time;
+	return 0;
+}
