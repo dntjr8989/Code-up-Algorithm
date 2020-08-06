@@ -1,0 +1,123 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <string.h>
+
+using namespace std;
+
+int N, M, K;
+int nutrient[11][11];
+int nutrientadd[11][11];
+
+int yy[8] = { -1, -1, -1, 0, 0, 1, 1, 1 };
+int xx[8] = { -1, 0, 1, -1, 1, -1, 0 , 1 };
+
+vector<int> tree[11][11];
+
+bool cmp(int t1, int t2)
+{
+	if (t1  < t2) return true;
+	else return false;
+}
+
+int main()
+{
+	//입력
+	cin >> N >> M >> K;
+	for (int i = 1; i <= N; i++)
+	{
+		for (int j = 1; j <= N; j++)
+		{
+			nutrient[i][j] = 5;
+			cin >> nutrientadd[i][j];
+		}
+	}
+	for (int i = 1; i <= M; i++)
+	{
+		int yy, xx, tage;
+		cin >> yy >> xx >> tage;
+		tree[yy][xx].push_back(tage);
+	}
+
+	for (int i = 1; i <= K; i++)
+	{
+        //봄 여름
+        for (int j = 1; j <= N; j++)
+        {
+            for (int k = 1; k <= N; k++)
+            {
+                //tree가 있는 곳만 검사
+                if (tree[j][k].size() == 0) continue;
+
+                int die = 0;
+                vector<int> t;
+
+                //정렬
+                sort(tree[j][k].begin(), tree[j][k].end(), cmp);
+                for (int l = 0; l < tree[j][k].size(); l++)
+                {
+                    if (nutrient[j][k] >= tree[j][k][l])
+                    {
+                        nutrient[j][k] -= tree[j][k][l];
+                        t.push_back(tree[j][k][l] + 1);
+                    }
+                    else
+                    {
+                        die += tree[j][k][l] / 2;
+                    }
+                }
+                tree[j][k].clear();
+                for (int l = 0; l < t.size(); l++)
+                {
+                    tree[j][k].push_back(t[l]);
+                }
+                nutrient[j][k] += die;
+            }
+        }
+        //가을
+        for (int j = 1; j <= N; j++)
+        {
+            for (int k = 1; k <= N; k++)
+            {
+                if (tree[j][k].size() == 0) continue;
+
+                for (int l = 0; l < tree[j][k].size(); l++)
+                {
+                    if (tree[j][k][l]%5 == 0)
+                    {
+                        for (int a = 0; a < 8; a++)
+                        {
+                            int nx = j + xx[a];
+                            int ny = k + yy[a];
+
+                            if (nx >= 1 && ny >= 1 && nx <= N && ny <= N)
+                            {
+                                tree[nx][ny].push_back(1);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        //겨울
+        for (int j = 1; j <= N; j++)
+        {
+            for (int k = 1; k <= N; k++)
+            {
+                nutrient[j][k] = nutrient[j][k] + nutrientadd[j][k];
+            }
+        }
+    }		
+	//출력
+    int cnt = 0;
+    for (int i = 1; i <= N; i++)
+    {
+        for (int j = 1; j <= N; j++)
+        {
+            cnt = cnt + tree[i][j].size();
+        }
+    }
+
+    cout << cnt << endl;
+	return 0;
+}
