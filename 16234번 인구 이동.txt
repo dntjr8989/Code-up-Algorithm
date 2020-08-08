@@ -1,0 +1,96 @@
+#include <iostream>
+#include <string.h>
+#include <math.h>
+#include <vector>
+
+using namespace std;
+
+struct YX {
+	int y;
+	int x;
+};
+
+vector<YX> yx;
+int sum, cnt;
+int N, L, R;
+int map[50][50];
+bool checkmap[50][50];
+
+void DFS(int y, int x)
+{
+	cnt++; sum += map[y][x];
+	YX tt;
+	tt.y = y; tt.x = x;
+	yx.push_back(tt);
+	checkmap[y][x] = true;
+
+	int moveX[4] = { 0, 0, -1, 1 }; //상하좌우
+	int moveY[4] = { 1, -1 ,0, 0 }; //상하좌우
+
+	for (int i = 0; i < 4; i++)
+	{
+		if (y + moveY[i] >= 0 && x + moveX[i] >= 0 && y + moveY[i] < N && x + moveX[i] < N)
+		{
+			if (checkmap[y + moveY[i]][x + moveX[i]] == true) continue;
+
+			int t = abs(map[y][x] - map[y + moveY[i]][x + moveX[i]]);
+			
+			if (t >= L && t <= R)
+			{
+				DFS(y + moveY[i], x + moveX[i]);
+			}
+		}
+	}
+};
+
+int main()
+{
+	//입력
+	cin >> N >> L >> R;
+	for (int i = 0; i < N; i++)
+	{
+		for (int j = 0; j < N; j++)
+		{
+			cin >> map[i][j];
+		}
+	}
+	
+	int answer = 0;
+
+	while (1)
+	{
+		memset(checkmap, 0, sizeof(checkmap));
+		
+		bool flag = false;
+		for (int i = 0; i < N; i++)
+		{
+			for (int j = 0; j < N; j++)
+			{
+				if (checkmap[i][j] == false)
+				{
+					sum = 0; cnt = 0;
+
+					//국경선 열기(연합 찾기)
+					DFS(i, j);
+					//연합 인구 옮기기
+					if (yx.size() == 1)
+					{
+						yx.clear();  continue;
+					}
+			
+					flag = true;
+					for (int k = 0; k < yx.size(); k++)
+					{
+						map[yx[k].y][yx[k].x] = sum / cnt;
+					}
+
+					yx.clear();
+				}
+			}
+		}
+		if (flag == false) break;
+		else answer++;
+	}
+	//출력
+	cout << answer;
+}
