@@ -1,0 +1,335 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+struct Action
+{
+	char plane;
+	char direction;
+};
+
+vector<Action> testcase[100];
+char cubeU[3][3] = { {'w', 'w', 'w'}, {'w', 'w', 'w'}, {'w', 'w', 'w'} };
+char cubeD[3][3] = { {'y', 'y', 'y'}, {'y', 'y', 'y'}, {'y', 'y', 'y'} };
+char cubeF[3][3] = { {'r', 'r', 'r'}, {'r', 'r', 'r'}, {'r', 'r', 'r'} };
+char cubeB[3][3] = { {'o', 'o', 'o'}, {'o', 'o', 'o'}, {'o', 'o', 'o'} };
+char cubeL[3][3] = { {'g', 'g', 'g'}, {'g', 'g', 'g'}, {'g', 'g', 'g'} };
+char cubeR[3][3] = { {'b', 'b', 'b'}, {'b', 'b', 'b'}, {'b', 'b', 'b'} };
+
+int testN;
+
+//면 반시계방향
+void anticlockwise(char (* plane)[3])
+{
+	char temp[2];
+	for (int i = 0; i < 2; i++)
+	{
+		temp[i] = plane[0][i];
+	}
+	for (int i = 0; i < 2; i++)
+	{
+		plane[0][i] = plane[i][2];
+	}
+	for (int i = 0; i < 2; i++)
+	{
+		plane[i][2] = plane[2][2-i];
+	}
+	for (int i = 0; i < 2; i++)
+	{
+		plane[2][i+1] = plane[i+1][0];
+	}
+	for (int i = 0; i < 2; i++)
+	{
+		plane[i+1][0] = temp[1 - i];
+	}
+};
+//면 시계방향
+void clockwise(char (* plane)[3])
+{
+	char temp[2];
+	for (int i = 0; i < 2; i++)
+	{
+		temp[i] = plane[0][i];
+	}
+	for (int i = 0; i < 2; i++)
+	{
+		plane[0][i] = plane[2-i][0];
+	}
+	for (int i = 0; i < 2; i++)
+	{
+		plane[i+1][0] = plane[2][i+1];
+	}
+	for (int i = 0; i < 2; i++)
+	{
+		plane[2][i+1] = plane[1-i][2];
+	}
+	for (int i = 0; i < 2; i++)
+	{
+		plane[i][2] = temp[i];
+	}
+};
+
+void printCube(char(*plane)[3])
+{
+	for (int i = 0; i < 3; i++)
+	{
+		for (int j = 0; j < 3; j++)
+		{
+			printf("%c", plane[i][j]);
+		}
+		printf("\n");
+	}
+}
+
+void resetCube()
+{
+	for (int i = 0; i < 3; i++)
+	{
+		for (int j = 0; j < 3; j++)
+		{
+			cubeU[i][j] = 'w';
+			cubeD[i][j] = 'y';
+			cubeF[i][j] = 'r';
+			cubeB[i][j] = 'o';
+			cubeL[i][j] = 'g';
+			cubeR[i][j] = 'b';
+		}
+	}
+}
+
+int main()
+{
+	//입력 + 큐브 액션 최적화
+	cin >> testN;
+	for (int i = 0; i < testN; i++)
+	{
+		int t;
+		Action beforetemp;
+		int beforetempcnt = 0;
+
+		cin >> t;
+		for (int j = 0; j < t; j++)
+		{
+			Action actiontemp;
+			cin >> actiontemp.plane >> actiontemp.direction;
+			if (beforetempcnt == 0)
+			{
+				beforetemp = actiontemp; beforetempcnt++;
+				testcase[i].push_back(actiontemp);
+			}
+			else
+			{
+				//전에 들어온 것과 면이 같은 경우
+				if (beforetemp.plane == actiontemp.plane)
+				{
+					//방향 같은 경우
+					if (beforetemp.direction == actiontemp.direction)
+					{
+						beforetempcnt++;
+						//결국 가만히 있는 거랑 같은 경우
+						if (beforetempcnt == 4)
+						{
+							beforetempcnt = 0;
+							for (int j = 0; j < 3; j++)
+							{
+								testcase[i].pop_back();
+							}
+						}
+						else
+						{
+							testcase[i].push_back(actiontemp);
+						}
+					}
+					//다른 경우
+					else
+					{
+						testcase[i].pop_back();
+						beforetempcnt--;
+					}
+				}
+				else
+				{
+					testcase[i].push_back(actiontemp);
+					beforetemp = actiontemp;
+					beforetempcnt = 1;
+				}
+			}
+		}
+	}
+	
+	//최적화한 testcase 돌리기
+	for (int i = 0; i < testN; i++)
+	{
+		for (int j = 0; j < testcase[i].size(); j++)
+		{
+			//윗면
+			if (testcase[i][j].plane == 'U')
+			{
+				//시계
+				if (testcase[i][j].direction == '+')
+				{
+					clockwise(cubeU);
+					char temp[3];
+					for (int k = 0; k < 3; k++) temp[k] = cubeF[0][k];
+					for (int k = 0; k < 3; k++) cubeF[0][k] = cubeR[0][k];
+					for (int k = 0; k < 3; k++) cubeR[0][k] = cubeB[0][k];
+					for (int k = 0; k < 3; k++) cubeB[0][k] = cubeL[0][k];
+					for (int k = 0; k < 3; k++) cubeL[0][k] = temp[k];
+				}
+				//반시계
+				else
+				{
+					anticlockwise(cubeU);
+					char temp[3];
+					for (int k = 0; k < 3; k++) temp[k] = cubeF[0][k];
+					for (int k = 0; k < 3; k++) cubeF[0][k] = cubeL[0][k];
+					for (int k = 0; k < 3; k++) cubeL[0][k] = cubeB[0][k];
+					for (int k = 0; k < 3; k++) cubeB[0][k] = cubeR[0][k];
+					for (int k = 0; k < 3; k++) cubeR[0][k] = temp[k];
+				}
+			}
+			//아랫면
+			else if (testcase[i][j].plane == 'D')
+			{
+				//시계
+				if (testcase[i][j].direction == '+')
+				{
+					clockwise(cubeD);
+					char temp[3];
+					for (int k = 0; k < 3; k++) temp[k] = cubeF[2][k];
+					for (int k = 0; k < 3; k++) cubeF[2][k] = cubeL[2][k];
+					for (int k = 0; k < 3; k++) cubeL[2][k] = cubeB[2][k];
+					for (int k = 0; k < 3; k++) cubeB[2][k] = cubeR[2][k];
+					for (int k = 0; k < 3; k++) cubeR[2][k] = temp[k];
+				}
+				//반시계
+				else
+				{
+					anticlockwise(cubeD);
+
+					char temp[3];
+					for (int k = 0; k < 3; k++) temp[k] = cubeF[2][k];
+					for (int k = 0; k < 3; k++) cubeF[2][k] = cubeR[2][k];
+					for (int k = 0; k < 3; k++) cubeR[2][k] = cubeB[2][k];
+					for (int k = 0; k < 3; k++) cubeB[2][k] = cubeL[2][k];
+					for (int k = 0; k < 3; k++) cubeL[2][k] = temp[k];
+				}
+			}
+			//앞면
+			else if (testcase[i][j].plane == 'F')
+			{
+				//시계
+				if (testcase[i][j].direction == '+')
+				{
+					clockwise(cubeF);
+
+					char temp[3];
+					for (int k = 0; k < 3; k++) temp[k] = cubeU[2][k];
+					for (int k = 0; k < 3; k++) cubeU[2][2 - k] = cubeL[k][2];
+					for (int k = 0; k < 3; k++) cubeL[k][2] = cubeD[0][k];
+					for (int k = 0; k < 3; k++) cubeD[0][2 - k] = cubeR[k][0];
+					for (int k = 0; k < 3; k++) cubeR[k][0] = temp[k];
+				}
+				//반시계
+				else
+				{
+					anticlockwise(cubeF);
+
+					char temp[3];
+					for (int k = 0; k < 3; k++) temp[k] = cubeU[2][k];
+					for (int k = 0; k < 3; k++) cubeU[2][k] = cubeR[k][0];
+					for (int k = 0; k < 3; k++) cubeR[k][0] = cubeD[0][2 - k];
+					for (int k = 0; k < 3; k++) cubeD[0][k] = cubeL[k][2];
+					for (int k = 0; k < 3; k++) cubeL[2 - k][2] = temp[k];
+				}
+			}
+			//뒷면
+			else if (testcase[i][j].plane == 'B')
+			{
+				//시계
+				if (testcase[i][j].direction == '+')
+				{
+					clockwise(cubeB);
+
+					char temp[3];
+					for (int k = 0; k < 3; k++) temp[k] = cubeU[0][k];
+					for (int k = 0; k < 3; k++) cubeU[0][k] = cubeR[k][2];
+					for (int k = 0; k < 3; k++) cubeR[k][2] = cubeD[2][2 - k];
+					for (int k = 0; k < 3; k++) cubeD[2][k] = cubeL[k][0];
+					for (int k = 0; k < 3; k++) cubeL[2 - k][0] = temp[k];
+				}
+				//반시계
+				else
+				{
+					anticlockwise(cubeB);
+
+					char temp[3];
+					for (int k = 0; k < 3; k++) temp[k] = cubeU[0][k];
+					for (int k = 0; k < 3; k++) cubeU[0][2 - k] = cubeL[k][0];
+					for (int k = 0; k < 3; k++) cubeL[k][0] = cubeD[2][k];
+					for (int k = 0; k < 3; k++) cubeD[2][2 - k] = cubeR[k][2];
+					for (int k = 0; k < 3; k++) cubeR[k][2] = temp[k];
+				}
+			}
+			//왼쪽 면
+			else if (testcase[i][j].plane == 'L')
+			{
+				//시계
+				if (testcase[i][j].direction == '+')
+				{
+					clockwise(cubeL);
+
+					char temp[3];
+					for (int k = 0; k < 3; k++) temp[k] = cubeU[k][0];
+					for (int k = 0; k < 3; k++) cubeU[2 - k][0] = cubeB[k][2];
+					for (int k = 0; k < 3; k++) cubeB[k][2] = cubeD[2 - k][0];
+					for (int k = 0; k < 3; k++) cubeD[k][0] = cubeF[k][0];
+					for (int k = 0; k < 3; k++) cubeF[k][0] = temp[k];
+				}
+				//반시계
+				else
+				{
+					anticlockwise(cubeL);
+
+					char temp[3];
+					for (int k = 0; k < 3; k++) temp[k] = cubeU[k][0];
+					for (int k = 0; k < 3; k++) cubeU[k][0] = cubeF[k][0];
+					for (int k = 0; k < 3; k++) cubeF[k][0] = cubeD[k][0];
+					for (int k = 0; k < 3; k++) cubeD[k][0] = cubeB[2 - k][2];
+					for (int k = 0; k < 3; k++) cubeB[2 - k][2] = temp[k];
+				}
+			}
+			//오른쪽 면
+			else if (testcase[i][j].plane == 'R')
+			{
+				//시계
+				if (testcase[i][j].direction == '+')
+				{
+					clockwise(cubeR);
+
+					char temp[3];
+					for (int k = 0; k < 3; k++) temp[k] = cubeU[k][2];
+					for (int k = 0; k < 3; k++) cubeU[k][2] = cubeF[k][2];
+					for (int k = 0; k < 3; k++) cubeF[k][2] = cubeD[k][2];
+					for (int k = 0; k < 3; k++) cubeD[k][2] = cubeB[2 - k][0];
+					for (int k = 0; k < 3; k++) cubeB[2 - k][0] = temp[k];
+				}
+				//반시계
+				else
+				{
+					anticlockwise(cubeR);
+
+					char temp[3];
+					for (int k = 0; k < 3; k++) temp[k] = cubeU[k][2];
+					for (int k = 0; k < 3; k++) cubeU[2 - k][2] = cubeB[k][0];
+					for (int k = 0; k < 3; k++) cubeB[k][0] = cubeD[2 - k][2];
+					for (int k = 0; k < 3; k++) cubeD[k][2] = cubeF[k][2];
+					for (int k = 0; k < 3; k++) cubeF[k][2] = temp[k];
+				}
+			}
+		}
+		printCube(cubeU);
+		resetCube();
+	}
+}

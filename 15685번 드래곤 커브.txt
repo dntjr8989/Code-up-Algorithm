@@ -1,0 +1,107 @@
+#include <vector>
+#include <iostream>
+
+using namespace std;
+
+struct DC
+{
+	int x, y, d, g;
+};
+
+int N;
+bool map[101][101] = { false, };
+
+void dragonCurve(DC t)
+{
+	/*
+	0: x좌표가 증가하는 방향(→)
+	1 : y좌표가 감소하는 방향(↑)
+	2 : x좌표가 감소하는 방향(←)
+	3 : y좌표가 증가하는 방향(↓)
+	*/
+	vector<DC> dragonC;
+	dragonC.push_back(t);
+	if (t.d == 0)
+	{
+		map[t.y][t.x] = true; map[t.y][t.x + 1] = true;
+		DC tt = t;
+		tt.x = tt.x + 1;
+		dragonC.push_back(tt);
+	}
+	else if (t.d == 1)
+	{
+		map[t.y][t.x] = true; map[t.y-1][t.x] = true;
+		DC tt = t;
+		tt.y = tt.y - 1;
+		dragonC.push_back(tt);
+	}
+	else if (t.d == 2)
+	{
+		map[t.y][t.x] = true; map[t.y][t.x-1] = true;
+		DC tt = t;
+		tt.x = tt.x - 1;
+		dragonC.push_back(tt);
+	}
+	else if(t.d == 3)
+	{ 
+		map[t.y][t.x] = true; map[t.y+1][t.x] = true;
+		DC tt = t;
+		tt.y = tt.y + 1;
+		dragonC.push_back(tt);
+	}
+
+	for (int i = 1; i <= t.g; i++)
+	{
+		int dy, dx;
+		dx = dragonC[dragonC.size() - 1].x;
+		dy = dragonC[dragonC.size() - 1].y;
+
+		int end = dragonC.size() - 1;
+		for (int j = end-1; j >= 0; j--)
+		{
+			DC newyx;
+			newyx.y = dragonC[j].y - dy; newyx.x = dragonC[j].x - dx;
+			newyx.y = -newyx.y;
+			int tt;
+			tt = newyx.y;
+			newyx.y = newyx.x;
+			newyx.x = tt;
+
+			newyx.y = newyx.y + dy; newyx.x = newyx.x + dx;
+
+			map[newyx.y][newyx.x] = true;
+			dragonC.push_back(newyx);
+		}
+	}
+};
+
+int countSquare()
+{
+	int cnt = 0;
+	for (int i = 0; i <= 99; i++)
+	{
+		for (int j = 0; j <= 99; j++)
+		{
+			if (map[i][j] == true && map[i + 1][j] == true && map[i][j + 1] == true && map[i + 1][j + 1] == true)
+			{
+				cnt++;
+			}
+		}
+	}
+	return cnt;
+}
+
+int main()
+{
+	//입력
+	cin >> N;
+	for (int i = 0; i < N; i++)
+	{
+		DC t;
+		cin >> t.x >> t.y >> t.d >> t.g;
+		dragonCurve(t);
+	}
+
+	//출력
+	cout << countSquare();
+}
