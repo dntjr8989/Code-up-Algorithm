@@ -1,0 +1,341 @@
+#include <iostream>
+#include <vector>
+#include <Windows.h>
+
+using namespace std;
+
+int N, M;
+int office[8][8];
+
+struct Cctv
+{
+	int y;
+	int x;
+	int number;
+};
+
+vector<Cctv> cctv;
+
+int answer = 100;
+
+int count(int direction[8])
+{
+	bool visit[8][8] = { false, };
+
+	for (int i = 0; i < cctv.size(); i++)
+	{
+		if (cctv[i].number == 1)
+		{
+			if (direction[i] == 1)
+			{
+				for (int j = cctv[i].x; j < M; j++)
+				{
+					visit[cctv[i].y][j] = true;
+					if (office[cctv[i].y][j] == 6) break;
+				}
+			}
+			else if (direction[i] == 2)
+			{
+				for (int j = cctv[i].y; j < N; j++)
+				{
+					visit[j][cctv[i].x] = true;
+					if (office[j][cctv[i].x] == 6) break;
+				}
+			}
+			else if (direction[i] == 3)
+			{
+				for (int j = cctv[i].x; j >=0; j--)
+				{
+					visit[cctv[i].y][j] = true;
+					if (office[cctv[i].y][j] == 6) break;
+				}
+			}
+			else if (direction[i] == 4)
+			{
+				for (int j = cctv[i].y; j >=0; j--)
+				{
+					visit[j][cctv[i].x] = true;
+					if (office[j][cctv[i].x] == 6) break;
+				}
+			}
+		}
+		else if (cctv[i].number == 2)
+		{
+			if (direction[i] == 1)
+			{
+				for (int j = cctv[i].x; j < M; j++)
+				{
+					visit[cctv[i].y][j] = true;
+					if (office[cctv[i].y][j] == 6) break;
+				}
+				for (int j = cctv[i].x; j >= 0; j--)
+				{
+					visit[cctv[i].y][j] = true;
+					if (office[cctv[i].y][j] == 6) break;
+				}
+			}
+			else if (direction[i] == 2)
+			{
+				for (int j = cctv[i].y; j < N; j++)
+				{
+					visit[j][cctv[i].x] = true;
+					if (office[j][cctv[i].x] == 6) break;
+				}
+				for (int j = cctv[i].y; j >= 0; j--)
+				{
+					visit[j][cctv[i].x] = true;
+					if (office[j][cctv[i].x] == 6) break;
+				}
+			}
+		}
+		else if (cctv[i].number == 3)
+		{
+			if (direction[i] == 1)
+			{
+				for (int j = cctv[i].y; j >= 0; j--)
+				{
+					visit[j][cctv[i].x] = true;
+					if (office[j][cctv[i].x] == 6) break;
+				}
+
+				for (int j = cctv[i].x; j < M; j++)
+				{
+					visit[cctv[i].y][j] = true;
+					if (office[cctv[i].y][j] == 6) break;
+				}
+			}
+			else if (direction[i] == 2)
+			{
+				for (int j = cctv[i].x; j < M; j++)
+				{
+					visit[cctv[i].y][j] = true;
+					if (office[cctv[i].y][j] == 6) break;
+				}
+				for (int j = cctv[i].y; j < N; j++)
+				{
+					visit[j][cctv[i].x] = true;
+					if (office[j][cctv[i].x] == 6) break;
+				}
+			}
+			else if (direction[i] == 3)
+			{
+				for (int j = cctv[i].y; j < N; j++)
+				{
+					visit[j][cctv[i].x] = true;
+					if (office[j][cctv[i].x] == 6) break;
+				}
+
+				for (int j = cctv[i].x; j >= 0; j--)
+				{
+					visit[cctv[i].y][j] = true;
+					if (office[cctv[i].y][j] == 6) break;
+				}
+			}
+			else if (direction[i] == 4)
+			{
+				for (int j = cctv[i].x; j >= 0; j--)
+				{
+					visit[cctv[i].y][j] = true;
+					if (office[cctv[i].y][j] == 6) break;
+				}
+				for (int j = cctv[i].y; j >= 0; j--)
+				{
+					visit[j][cctv[i].x] = true;
+					if (office[j][cctv[i].x] == 6) break;
+				}
+			}
+		}
+		else if (cctv[i].number == 4)
+		{
+			if (direction[i] == 1)
+			{
+				for (int j = cctv[i].y; j >= 0; j--)
+				{
+					visit[j][cctv[i].x] = true;
+					if (office[j][cctv[i].x] == 6) break;
+				}
+
+				for (int j = cctv[i].x; j < M; j++)
+				{
+					visit[cctv[i].y][j] = true;
+					if (office[cctv[i].y][j] == 6) break;
+				}
+
+				for (int j = cctv[i].x; j >= 0; j--)
+				{
+					visit[cctv[i].y][j] = true;
+					if (office[cctv[i].y][j] == 6) break;
+				}
+			}
+			else if (direction[i] == 2)
+			{
+				for (int j = cctv[i].y; j >= 0; j--)
+				{
+					visit[j][cctv[i].x] = true;
+					if (office[j][cctv[i].x] == 6) break;
+				}
+
+				for (int j = cctv[i].x; j < M; j++)
+				{
+					visit[cctv[i].y][j] = true;
+					if (office[cctv[i].y][j] == 6) break;
+				}
+
+				for (int j = cctv[i].y; j < N; j++)
+				{
+					visit[j][cctv[i].x] = true;
+					if (office[j][cctv[i].x] == 6) break;
+				}
+			}
+			else if (direction[i] == 3)
+			{
+
+				for (int j = cctv[i].x; j >= 0; j--)
+				{
+					visit[cctv[i].y][j] = true;
+					if (office[cctv[i].y][j] == 6) break;
+				}
+
+				for (int j = cctv[i].x; j < M; j++)
+				{
+					visit[cctv[i].y][j] = true;
+					if (office[cctv[i].y][j] == 6) break;
+				}
+
+				for (int j = cctv[i].y; j < N; j++)
+				{
+					visit[j][cctv[i].x] = true;
+					if (office[j][cctv[i].x] == 6) break;
+				}
+			}
+			else if (direction[i] == 4)
+			{
+
+				for (int j = cctv[i].x; j >= 0; j--)
+				{
+					visit[cctv[i].y][j] = true;
+					if (office[cctv[i].y][j] == 6) break;
+				}
+
+				for (int j = cctv[i].y; j < N; j++)
+				{
+					visit[j][cctv[i].x] = true;
+					if (office[j][cctv[i].x] == 6) break;
+				}
+				for (int j = cctv[i].y; j >= 0; j--)
+				{
+					visit[j][cctv[i].x] = true;
+					if (office[j][cctv[i].x] == 6) break;
+				}
+			}
+		}
+		else if (cctv[i].number == 5)
+		{
+
+			for (int j = cctv[i].x; j < M; j++)
+			{
+				visit[cctv[i].y][j] = true;
+				if (office[cctv[i].y][j] == 6) break;
+			}
+			for (int j = cctv[i].x; j >= 0; j--)
+			{
+				visit[cctv[i].y][j] = true;
+				if (office[cctv[i].y][j] == 6) break;
+			}
+			for (int j = cctv[i].y; j < N; j++)
+			{
+				visit[j][cctv[i].x] = true;
+				if (office[j][cctv[i].x] == 6) break;
+			}
+			for (int j = cctv[i].y; j >= 0; j--)
+			{
+				visit[j][cctv[i].x] = true;
+				if (office[j][cctv[i].x] == 6) break;
+			}
+		}
+	}
+
+	int cnt = 0;
+	for (int i = 0; i < N; i++)
+	{
+		for (int j = 0; j < M; j++)
+		{
+			if (visit[i][j] == false && office[i][j] == 0) cnt++;
+		}
+	}
+	return cnt;
+};
+
+void Solution(int direction[8], int index)
+{
+	int tempd[8];
+
+	for (int i = 0; i < cctv.size(); i++)
+	{
+		tempd[i] = direction[i];
+		if (cctv[i].number == 1 || cctv[i].number == 3 || cctv[i].number == 4)
+		{
+			if (direction[i] >= 5) return;
+		}
+		else if (cctv[i].number == 2)
+		{
+			if (direction[i] >= 3) return;
+		}
+		else if (cctv[i].number == 5)
+		{
+			if(direction[i] >= 2) return;
+		}
+	}
+	if (index >= cctv.size())
+	{
+		int t = count(tempd);
+		if (answer > t) answer = t;
+		return;
+	}
+	
+	while( 1 )
+	{
+		Solution(tempd, index+1);
+
+		if (cctv[index].number == 1 || cctv[index].number == 3 || cctv[index].number == 4)
+		{
+			if (tempd[index] >= 4) break;
+		}
+		else if (cctv[index].number == 2)
+		{
+			if(tempd[index] >= 2) break;
+		}
+		else if (cctv[index].number == 5)
+		{
+			if (tempd[index] >= 1) break;
+		}
+
+		tempd[index]++;
+	}
+};
+
+int main()
+{
+	cin >> N >> M;
+
+	for (int i = 0; i < N; i++)
+	{
+		for (int j = 0; j < M; j++)
+		{
+			cin >> office[i][j];
+			if (office[i][j] > 0 && office[i][j] != 6)
+			{
+				Cctv t;
+				t.y = i; t.x = j; t.number = office[i][j];
+				cctv.push_back(t);
+			}
+		}
+	}
+	int direction[8];
+	for (int i = 0; i < cctv.size(); i++)
+	{
+		direction[i] = 1;
+	}
+	Solution(direction, 0);
+	cout << answer;
+}
