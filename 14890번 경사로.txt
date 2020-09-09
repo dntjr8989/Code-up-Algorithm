@@ -1,0 +1,155 @@
+#include <iostream>
+#include <math.h>
+
+using namespace std;
+
+int N, L;
+int map[100][100];
+
+int main()
+{
+	//입력
+	cin >> N >> L;
+	for (int i = 0; i < N; i++)
+	{
+		for (int j = 0; j < N; j++)
+		{
+			cin >> map[i][j];
+		}
+	}
+
+	int answer = 0;
+
+	//행
+	for (int i = 0; i < N; i++)
+	{
+		int t = map[0][i]; bool flag = true; int cnt = 1;
+		bool checkmap[100] = { false, };
+		for (int j = 1; j < N; j++)
+		{
+			if (t != map[j][i])
+			{
+				if (abs(t - map[j][i]) > 1)
+				{
+					flag = false; break;
+				}
+				if (t > map[j][i])
+				{
+					if (j + L - 1 > N - 1)
+					{
+						flag = false; break;
+					}
+					int tt = map[j][i];
+					checkmap[j] = true;
+					for (int k = j + L - 1; k >= j+1; k--)
+					{
+						if (tt != map[k][i])
+						{
+							flag = false; break;
+						}
+						else if (checkmap[k] == true)
+						{
+							flag = false; break;
+						}
+						checkmap[k] = true;
+					}
+				}
+				else
+				{
+					if (cnt < L)
+					{
+						flag = false; break;
+					}
+					for (int k = j - 1; k >= j - L; k--)
+					{
+						if (checkmap[k] == true)
+						{
+							flag = false; break;
+						}
+						checkmap[k] = true;
+					}
+				}
+				if (flag == false)
+				{
+					break;
+				}
+				cnt = 1;
+			}
+			else
+			{
+				cnt++;
+			}
+			t = map[j][i];
+		}
+		if (flag == false) continue;
+		answer++;
+	}
+	//열
+	
+	for (int i = 0; i < N; i++)
+	{
+		int t = map[i][0]; bool flag = true; int cnt = 1;
+		bool checkmap[100] = { false, };
+		for (int j = 1; j < N; j++)
+		{
+			if (abs(t - map[i][j]) > 1)
+			{
+				flag = false;  break;
+			}
+			if (t != map[i][j])
+			{
+				if (t > map[i][j])
+				{
+					if (j + L - 1 > N - 1)
+					{
+						flag = false; break;
+					}
+
+					int tt = map[i][j];
+					checkmap[j] = true;
+					for (int k = j + L - 1; k >= j + 1; k--)
+					{
+						if (tt != map[i][k])
+						{
+							flag = false; break;
+						}
+						else if (checkmap[k] == true)
+						{
+							flag = false; break;
+						}
+						checkmap[k] = true;
+					}
+				}
+				else
+				{
+					if (cnt < L)
+					{
+						flag = false; break;
+					}
+					for (int k = j - 1; k >= j - L; k--)
+					{
+						if (checkmap[k] == true)
+						{
+							flag = false; break;
+						}
+						checkmap[k] = true;
+					}
+				}
+				if (flag == false)
+				{
+					break;
+				}
+				cnt = 1;
+			}
+			else
+			{
+				cnt++;
+			}
+			t = map[i][j];
+		}
+		if (flag == false) continue;
+		answer++;
+	}
+
+	cout << answer;
+}
