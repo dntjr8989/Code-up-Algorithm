@@ -1,0 +1,114 @@
+#include <iostream>
+#include <deque>
+
+using namespace std;
+
+char gear[4][8];
+int K;
+
+struct Move
+{
+	int num;
+	int dir;
+};
+
+void move(int num, int dir)
+{
+	deque<Move> moveinform;
+	
+	Move t;
+	t.num = num; t.dir = dir;
+
+	moveinform.push_back(t);
+
+	//톱니 바퀴 앞쪽
+	for (int i = num; i >= 1; i--)
+	{
+		if (gear[i][6] != gear[i - 1][2])
+		{
+			Move t;
+			t.num = i - 1;  t.dir = -moveinform.back().dir;
+			moveinform.push_back(t);
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	//톱니 바퀴 뒤쪽
+	for (int i = num; i < 3; i++)
+	{
+		if (gear[i][2] != gear[i + 1][6])
+		{
+			Move t;
+			t.num = i + 1; t.dir = -moveinform.front().dir;
+			moveinform.push_front(t);
+		}
+		else
+		{
+			break;
+		}
+	}
+	//톱니바퀴 움직이기
+	for (int i = 0; i < moveinform.size(); i++)
+	{
+		if (moveinform[i].dir == 1)
+		{
+			//시계
+			int t;
+			t = gear[moveinform[i].num][7];
+			for (int j = 7; j>=1; j--)
+			{
+				gear[moveinform[i].num][j] = gear[moveinform[i].num][j - 1];
+			}
+			gear[moveinform[i].num][0] = t;
+		}
+		else
+		{
+			//반시계
+			int t;
+			t = gear[moveinform[i].num][0];
+			for (int j = 1; j < 8; j++)
+			{
+				gear[moveinform[i].num][j - 1] = gear[moveinform[i].num][j];
+			}
+			gear[moveinform[i].num][7] = t;
+		}
+	}
+};
+
+int score()
+{
+	int sum = 0;
+	if (gear[0][0] == '1') sum += 1;
+	if (gear[1][0] == '1') sum += 2;
+	if (gear[2][0] == '1') sum += 4;
+	if (gear[3][0] == '1') sum += 8;
+
+	return sum;
+};
+
+int main()
+{
+	//입력
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 8; j++)
+		{
+			cin >> gear[i][j];
+		}
+	}
+	
+	cin >> K;
+	for (int i = 0; i < K; i++)
+	{
+		int num, dir;
+		cin >> num >> dir;
+		move(num-1, dir);
+	}
+
+	cout << score();
+
+	return 0;
+}
