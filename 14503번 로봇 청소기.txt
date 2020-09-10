@@ -1,0 +1,164 @@
+#include <iostream>
+
+using namespace std;
+
+int N, M;
+int roboty, robotx, robotd;
+int map[50][50];
+bool checkmap[50][50] = { false, };
+
+int main()
+{
+	//입력
+	cin >> N >> M;
+	cin >> roboty>> robotx >> robotd;
+	for (int i = 0; i < N; i++)
+	{
+		for (int j = 0; j < M; j++)
+		{
+			cin >> map[i][j];
+		}
+	}
+
+	int answer = 0;
+	while (1)
+	{
+		//1번 현재 위치 청소
+		answer++; checkmap[roboty][robotx] = true;
+
+		//왼쪽 방향부터 차례대로 탐색
+
+		bool flag = true;
+		for ( int i = 1; i <= 4; i++)
+		{
+			//북
+			if (robotd == 0)
+			{
+				robotd = 3;
+				if (robotx - 1 >= 0)
+				{
+					if (checkmap[roboty][robotx - 1] == false && map[roboty][robotx - 1] == 0)
+					{
+						robotx = robotx - 1;
+						break;
+					}
+				}
+			}
+			//동
+			else if (robotd == 1)
+			{
+				robotd = 0;
+				if (roboty - 1 >= 0)
+				{
+					if (checkmap[roboty - 1][robotx] == false && map[roboty - 1][robotx] == 0)
+					{
+						roboty = roboty - 1;
+						break;
+					}
+				}
+			}
+			//남
+			else if (robotd == 2)
+			{
+				robotd = 1;
+				if (robotx + 1 < M)
+				{
+					if (checkmap[roboty][robotx + 1] == false && map[roboty][robotx + 1] == 0)
+					{
+						robotx = robotx + 1;
+						break;
+					}
+				}
+			}
+			//서
+			else if (robotd == 3)
+			{
+				robotd = 2;
+				if (roboty + 1 < N)
+				{
+					if (checkmap[roboty + 1][robotx] == false && map[roboty + 1][robotx] == 0)
+					{
+						roboty = roboty + 1;
+						break;
+					}
+				}
+			}
+			//네 방향 다 안 됨
+			if (i == 4)
+			{
+				//북
+				if (robotd == 0)
+				{
+					if (roboty + 1 < N)
+					{
+						if (map[roboty + 1][robotx] == 1)
+						{
+							flag = false;
+							break;
+						}
+						roboty = roboty + 1;
+					}
+					else
+					{
+						flag = false; break;
+					}
+				}
+				//동
+				else if (robotd == 1)
+				{
+					if (robotx - 1 >= 0)
+					{
+						if (map[roboty][robotx - 1] == 1)
+						{
+							flag = false;
+							break;
+						}
+						robotx = robotx - 1;
+					}
+					else
+					{
+						flag = false; break;
+					}
+				}
+				//남
+				else if (robotd == 2)
+				{
+					if (roboty - 1 >= 0)
+					{
+						if (map[roboty - 1][robotx] == 1)
+						{
+							flag = false;
+							break;
+						}
+						roboty = roboty - 1;
+					}
+					else
+					{
+						flag = false; break;
+					}
+				}
+				//서
+				else if (robotd == 3)
+				{
+					if (robotx + 1 < M)
+					{
+						if (map[roboty][robotx + 1] == 1)
+						{
+							flag = false;
+							break;
+						}
+						robotx = robotx + 1;
+					}
+					else
+					{
+						flag = false; break;
+					}
+				}
+				i = 0;
+				continue;
+			}
+		}
+		if (flag == false) break;
+	}
+	cout << answer;
+}

@@ -1,0 +1,113 @@
+#include <iostream>
+
+using namespace std;
+
+int N;
+int num[11];
+int oper[4]; // 덧셈, 뺄셈, 곱셈, 나눗셈
+
+int answermax = -1000000001;
+int answermin = 1000000001;
+
+void computenumexp(char operc[10])
+{
+	int t = num[0];
+
+	for (int i = 1; i < N; i++)
+	{
+		if (operc[i - 1] == '+')
+		{
+			t = t + num[i];
+		}
+		else if (operc[i - 1] == '-')
+		{
+			t = t - num[i];
+		}
+		else if (operc[i - 1] == '*')
+		{
+			t = t * num[i];
+		}
+		else if (operc[i - 1] == '/')
+		{
+			if (t < 0)
+			{
+				t = -t;
+				t = t / num[i];
+				t = -t;
+			}
+			else
+			{
+				t = t / num[i];
+			}
+		}
+	}
+	if (t > answermax) answermax = t;
+	if (t < answermin) answermin = t;
+};
+void creatnumexp(char operc[10], int oper[4], int operi)
+{
+	//종료조건
+	if (operi == N-1)
+	{
+		computenumexp(operc);
+		return;
+	}
+	//
+	int opert[4];
+	char operct[10];
+	for (int i = 0; i < 4; i++)
+	{
+		opert[i] = oper[i];
+	}
+	for (int i = 0; i < operi; i++)
+	{
+		operct[i] = operc[i];
+	}
+
+	for (int i = 0; i < 4; i++)
+	{
+		if (oper[i] == 0) continue;
+		
+		if (i == 0)
+		{
+			operct[operi] = '+'; operi++;
+		}
+		else if (i == 1)
+		{
+			operct[operi] = '-'; operi++;
+		}
+		else if (i == 2)
+		{
+			operct[operi] = '*'; operi++;
+		}
+		else if (i == 3)
+		{
+			operct[operi] = '/'; operi++;
+		}
+		opert[i]--;
+		creatnumexp(operct, opert, operi);
+		opert[i]++;
+		operi--;
+	}
+};
+
+int main()
+{
+	//입력
+	cin >> N;
+	for (int i = 0; i < N; i++)
+	{
+		cin >> num[i];
+	}
+	for (int i = 0; i < 4; i++)
+	{
+		cin >> oper[i];
+	}
+	//
+	char operc[10];
+	creatnumexp(operc, oper, 0);
+
+	//출력
+	cout << answermax << endl;
+	cout << answermin;
+}

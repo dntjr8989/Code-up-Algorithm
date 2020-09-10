@@ -1,0 +1,83 @@
+#include <iostream>
+#include <vector>
+#include <math.h>
+
+using namespace std;
+
+int N;
+int S[20][20];
+
+int answer = 99999;
+
+void Solution(bool check[20], int index, int cnt)
+{
+	//종료조건
+	if (cnt == N/2)
+	{
+		vector<int> start;
+		vector<int> link;
+
+		for (int i = 0; i < N; i++)
+		{
+			//스타트 팀
+			if (check[i] == true)
+			{
+				start.push_back(i);
+			}
+			//링크팀
+			if (check[i] == false)
+			{
+				link.push_back(i);
+			}
+		}
+		int startsum = 0;
+		int linksum = 0;
+		for (int i = 0; i < N / 2; i++)
+		{
+			for (int j = i + 1; j < N / 2; j++)
+			{
+				startsum = startsum + S[start[i]][start[j]] + S[start[j]][start[i]];
+				linksum = linksum + S[link[i]][link[j]] + S[link[j]][link[i]];
+			}
+		}
+		int t = abs(startsum - linksum);
+		
+		if (answer > t)
+		{
+			answer = t;
+		}
+	}
+	if (index > (N-1))
+	{
+		return;
+	}
+	//
+	bool checkt[20];
+	for (int i = 0; i < N; i++)
+	{
+		checkt[i] = check[i];
+	}
+
+	checkt[index] = true;
+	Solution(checkt, index+1, cnt + 1);
+	checkt[index] = false;
+	Solution(checkt, index+1, cnt);
+};
+
+int main()
+{
+	//입력
+	cin >> N;
+	for (int i = 0; i < N; i++)
+	{
+		for (int j = 0; j < N; j++)
+		{
+			cin >> S[i][j];
+		}
+	}
+	bool check[20] = { false, };
+	Solution(check, 0, 0);
+
+	//출력
+	cout << answer;
+}
