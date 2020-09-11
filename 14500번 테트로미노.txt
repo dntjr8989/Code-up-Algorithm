@@ -1,0 +1,262 @@
+#include <iostream>
+
+using namespace std;
+
+int N, M;
+int paper[500][500];
+
+int answer = -1;
+
+int score(int y, int x)
+{
+	// ㅁㅁㅁㅁ
+	int maximum = -1;
+
+	if (y + 3 < N)
+	{
+		int sum = 0;
+		for (int i = y; i <= y + 3; i++)
+		{
+			sum = sum + paper[i][x];
+		}
+		if (sum > maximum) { maximum = sum; }
+	}
+	if (x + 3 < M)
+	{
+		int sum = 0;
+		for (int i = x; i <= x + 3; i++)
+		{
+			sum = sum + paper[y][i];
+		}
+		if (sum > maximum) { maximum = sum; }
+	}
+	//ㅁㅁ
+	//ㅁㅁ
+	if (x + 1 < M && y + 1 < N)
+	{
+		int sum = 0;
+		for (int i = y; i <= y + 1; i++)
+		{
+			for (int j = x; j <= x + 1; j++)
+			{
+				sum = sum + paper[i][j];
+			}
+		}
+		if (sum > maximum) { maximum = sum; }
+	}
+	//ㅁ
+	//ㅁ
+	//ㅁㅁ
+	if (y + 2 < N && x + 1 < M)
+	{
+		int sum = 0;
+		for (int i = y; i <= y + 2; i++)
+		{
+			sum = sum + paper[i][x];
+		}
+		sum = sum + paper[y + 2][x + 1];
+		if (sum > maximum) { maximum = sum; }
+	}
+	// ㅁㅁㅁ
+	// ㅁ
+	if (x - 2 >= 0 && y + 1 < N)
+	{
+		int sum = 0;
+		for (int i = x-2; i <= x; i++)
+		{
+			sum = sum + paper[y][i];
+		}
+		sum = sum + paper[y+1][x-2];
+		if (sum > maximum) { maximum = sum; }
+	}
+	//ㅁㅁ
+	//  ㅁ
+	//  ㅁ
+	if (y - 2 >= 0 && x-1 >= 0)
+	{
+		int sum = 0;
+		for (int i = y-2; i <= y; i++)
+		{
+			sum = sum + paper[i][x];
+		}
+		sum = sum + paper[y-2][x-1];
+		if (sum > maximum) { maximum = sum; }
+	}
+	//    ㅁ
+	//ㅁㅁㅁ
+	if (y - 1 >= 0 && x + 2 < M)
+	{
+		int sum = 0;
+		for (int i = x; i <= x + 2; i++)
+		{
+			sum = sum + paper[y][i];
+		}
+		sum = sum + paper[y - 1][x + 2];
+		if (sum > maximum) { maximum = sum; }
+	}
+	//   ㅁ
+	//   ㅁ
+	// ㅁㅁ
+	if (y + 2 < N && x - 1 >= 0)
+	{
+		int sum = 0;
+		for (int i = y; i <= y + 2; i++)
+		{
+			sum = sum + paper[i][x];
+		}
+		sum = sum + paper[y + 2][x - 1];
+		if (sum > maximum) { maximum = sum; }
+	}
+	//ㅁ
+	//ㅁㅁㅁ
+	if (y - 1 >= 0 && x - 2 >= 0)
+	{
+		int sum = 0;
+		for (int i = x - 2; i <= x; i++)
+		{
+			sum = sum + paper[y][i];
+		}
+		sum = sum + paper[y - 1][x - 2];
+		if (sum > maximum) { maximum = sum; }
+	}
+	//ㅁㅁ
+	//ㅁ
+	//ㅁ
+	if (y - 2 >= 0 && x + 1 < M)
+	{
+		int sum = 0;
+		for (int i = y - 2; i <= y; i++)
+		{
+			sum = sum + paper[i][x];
+		}
+		sum = sum + paper[y - 2][x + 1];
+		if (sum > maximum) { maximum = sum; }
+	}
+	//ㅁㅁㅁ
+	//    ㅁ
+	if (y + 1 < N && x + 2 < M)
+	{
+		int sum = 0;
+		for (int i = x; i <= x + 2; i++)
+		{
+			sum = sum + paper[y][i];
+		}
+		sum = sum + paper[y + 1][x + 2];
+		if (sum > maximum) { maximum = sum; }
+	}
+	//ㅁ
+	//ㅁㅁ
+	//  ㅁ
+	if (y + 2 < N && x + 1 < M)
+	{
+		int sum = 0;
+		sum = sum + paper[y][x] + paper[y + 1][x] + paper[y + 1][x + 1] + paper[y + 2][x + 1];
+		if (sum > maximum) { maximum = sum; }
+	}
+	//  ㅁㅁ
+	//ㅁㅁ
+	if (x - 2 >= 0 && y + 1 < N)
+	{
+		int sum = 0;
+		sum = sum + paper[y][x] + paper[y][x - 1] + paper[y + 1][x - 1] + paper[y + 1][x - 2];
+		if (sum > maximum) { maximum = sum; }
+	}
+	//  ㅁ
+	//ㅁㅁ
+	//ㅁ
+	if (x - 1 >= 0 && y + 2 < N)
+	{
+		int sum = 0;
+		sum = sum + paper[y][x] + paper[y + 1][x] + paper[y + 1][x - 1] + paper[y + 2][x - 1];
+		if (sum > maximum) { maximum = sum; }
+	}
+	//ㅁㅁ
+	//  ㅁㅁ
+	if (x - 2 >= 0 && y - 1 >= 0)
+	{
+		int sum = 0;
+		sum = sum + paper[y][x] + paper[y][x - 1] + paper[y - 1][x - 1] + paper[y - 1][x - 2];
+		if (sum > maximum) { maximum = sum; }
+	}
+	//ㅁㅁㅁ
+	//  ㅁ
+	if(x + 2 < M && y + 1 < N)
+	{
+		int sum = 0;
+		for (int i = x; i <= x + 2; i++)
+		{
+			sum = sum + paper[y][i];
+		}
+		sum = sum + paper[y + 1][x + 1];
+		if (sum > maximum) { maximum = sum; }
+	}
+	//  ㅁ
+	//ㅁㅁ
+	//  ㅁ
+	if (x - 1 >= 0 && y + 2 < N)
+	{
+		int sum = 0;
+		for (int i = y; i <= y + 2; i++)
+		{
+			sum = sum + paper[i][x];
+		}
+		sum = sum + paper[y + 1][x - 1];
+		if (sum > maximum) { maximum = sum; }
+	}
+	//  ㅁ
+	//ㅁㅁㅁ
+	if (x - 2 >= 0 && y - 1 >= 0)
+	{
+		int sum = 0;
+		for (int i = x - 2; i <= x; i++)
+		{
+			sum = sum + paper[y][i];
+		}
+		sum = sum + paper[y - 1][x - 1];
+		if (sum > maximum) { maximum = sum; }
+	}
+
+	//ㅁ
+	//ㅁㅁ
+	//ㅁ
+	if (y - 2 >= 0 && x + 1 < M)
+	{
+		int sum = 0;
+		for (int i = y - 2; i <= y; i++)
+		{
+			sum = sum + paper[i][x];
+		}
+		sum = sum + paper[y - 1][x + 1];
+		if (sum > maximum) { maximum = sum; }
+	}
+
+	return maximum;
+};
+int main()
+{
+	//입력
+	cin >> N >> M;
+	for (int i = 0; i < N; i++)
+	{
+		for (int j = 0; j < M; j++)
+		{
+			cin >> paper[i][j];
+		}
+	}
+
+	//
+	for (int i = 0; i < N; i++)
+	{
+		for (int j = 0; j < M; j++)
+		{
+			int t = score(i, j);
+
+			if (t > answer)
+			{
+				answer = t;
+			}
+		}
+	}
+	//출력
+	cout << answer;
+}

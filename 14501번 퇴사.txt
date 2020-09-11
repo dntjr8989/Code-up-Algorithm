@@ -1,0 +1,42 @@
+#include <iostream>
+
+using namespace std;
+
+int N;
+int TP[16][2];
+
+int answer = -1;
+
+void Solution(int day, int sum)
+{
+	//종료조건
+	if (day > N)
+	{
+		if (sum > answer)
+		{
+			answer = sum;
+		}
+		return;
+	}
+	//
+	Solution(day + 1, sum);
+	if (day + TP[day][0] <= N+1)
+	{
+		Solution(day + TP[day][0], sum + TP[day][1]);
+	}
+}
+int main()
+{
+	//입력
+	cin >> N;
+	for (int i = 1; i <= N; i++)
+	{
+		cin >> TP[i][0] >> TP[i][1];
+	}
+
+	//
+	Solution(1, 0);
+
+	//출력
+	cout << answer;
+}

@@ -1,0 +1,95 @@
+#include <iostream>
+
+using namespace std;
+
+int N, M, diceX, diceY, K;
+int map[20][20];
+int dice[7] = { 0, };//주사위 면
+int order[1000];
+
+/*
+  2
+4 1 3
+  5
+  6
+*/
+
+int main()
+{
+	//입력
+	cin >> N >> M >> diceY >> diceX >> K;
+	for (int i = 0; i < N; i++)
+	{
+		for (int j = 0; j < M; j++)
+		{
+			cin >> map[i][j];
+		}
+	}
+	for (int i = 0; i < K; i++)
+	{
+		cin >> order[i];
+	}
+	//
+
+	for (int i = 0; i < K; i++)
+	{	
+		//주사위 이동
+		//동
+		if (order[i] == 1)
+		{
+			if (diceX >= M - 1) continue;
+
+			int t;
+			t = dice[3]; dice[3] = dice[1]; dice[1] = dice[4];
+			dice[4] = dice[6]; dice[6] = t;
+			
+			diceX++;
+		}
+		//서
+		else if (order[i] == 2)
+		{
+			if (diceX <= 0) continue;
+
+			int t;
+			t = dice[4]; dice[4] = dice[1]; dice[1] = dice[3];
+			dice[3] = dice[6]; dice[6] = t;
+			
+			diceX--;
+		}
+		//북
+		else if (order[i] == 3)
+		{
+			if (diceY <= 0) continue;
+
+			int t;
+			t = dice[2]; dice[2] = dice[1]; dice[1] = dice[5];
+			dice[5] = dice[6]; dice[6] = t;
+
+			diceY--;
+		}
+		//남
+		else if (order[i] == 4)
+		{
+			if (diceY >= N - 1) continue;
+
+			int t;
+			t = dice[5]; dice[5] = dice[1]; dice[1] = dice[2];
+			dice[2] = dice[6]; dice[6] = t;
+
+			diceY++;
+		}
+
+		if (map[diceY][diceX] == 0)
+		{
+			map[diceY][diceX] = dice[6];
+		}
+		else
+		{
+			dice[6] = map[diceY][diceX];
+			map[diceY][diceX] = 0;
+		}
+
+		cout << dice[1] << endl;
+	}
+	return 0;
+}
