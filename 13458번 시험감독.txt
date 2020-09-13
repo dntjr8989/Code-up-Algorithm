@@ -1,0 +1,41 @@
+#include <iostream>
+#include <math.h>
+
+using namespace std;
+
+int testN;
+int tester[1000000];
+int mains, subs;
+long long answer = 0;
+
+int main()
+{
+	//입력
+	cin >> testN;
+	for (int i = 0; i < testN; i++)
+	{
+		cin >> tester[i];
+	}
+	cin >> mains >> subs;
+
+	//
+	for (int i = 0; i < testN; i++)
+	{
+		tester[i] = tester[i] - mains;
+		answer++;
+		if (tester[i] > 0)
+		{
+			if (tester[i] % subs == 0)
+			{
+				answer = answer + floor(tester[i] / subs);
+			}
+			else
+			{
+				answer = answer + floor(tester[i] / subs) +1;
+			}
+		}
+	}
+
+	//출력
+	cout << answer;
+}
