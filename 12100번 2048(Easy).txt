@@ -1,0 +1,212 @@
+#include <iostream>
+
+using namespace std;
+
+int N;
+int mainboard[20][20];
+int answer = -1;
+
+void Solution(int n, int board[20][20], int move)
+{
+	int tempboard[20][20] = { 0, };
+
+	//가장 큰 블록 찾기
+	for (int i = 0; i < N; i++)
+	{
+		for (int j = 0; j < N; j++)
+		{
+			if (answer < board[i][j])
+			{
+				answer = board[i][j];
+			}
+		}
+	}
+	
+	//6번 이동해야하는 경우 return
+	if (n == 6) return;
+
+	//아닌 경우 움직임
+	//move 0 : 안 움직임 1 : 오른쪽  2 : 왼쪽  3 : 윗 쪽  4 : 아랫 쪽
+	if (move == 0)
+	{
+		for (int i = 0; i < N; i++)
+		{
+			for (int j = 0; j < N; j++)
+			{
+				tempboard[i][j] = board[i][j];
+			}
+		}
+	}
+	else if (move == 1)
+	{
+		for (int i = 0; i < N; i++)
+		{
+			int blank = N - 1;
+			bool check[20] = { false, };
+			for (int j = N - 1; j >= 0; j--)
+			{
+				if (board[i][j] == 0)
+				{
+					continue;
+				}
+				else
+				{
+					if (blank == N-1)
+					{
+						tempboard[i][blank] = board[i][j];
+						blank--;
+					}
+					else
+					{
+						if (check[blank+1] == false && tempboard[i][blank + 1] == board[i][j])
+						{
+							tempboard[i][blank + 1] = tempboard[i][blank + 1] * 2;
+							check[blank + 1] = true;
+						}
+						else
+						{
+							tempboard[i][blank] = board[i][j];
+							blank--;
+						}
+					}
+				}
+			}
+		}
+	}
+	else if (move == 2)
+	{
+		for (int i = 0; i < N; i++)
+		{
+			int blank = 0;
+			bool check[20] = { false, };
+			for (int j = 0; j < N; j++)
+			{
+				if (board[i][j] == 0)
+				{
+					continue;
+				}
+				else
+				{
+					if (blank == 0)
+					{
+						tempboard[i][blank] = board[i][j];
+						blank++;
+					}
+					else
+					{
+						if (check[blank-1] == false && tempboard[i][blank - 1] == board[i][j])
+						{
+							tempboard[i][blank - 1] = tempboard[i][blank - 1] * 2;
+							check[blank - 1] = true;
+						}
+						else
+						{
+							tempboard[i][blank] = board[i][j];
+							blank++;
+						}
+					}
+				}
+			}
+		}
+	}
+	else if (move == 3)
+	{
+		for (int i = 0; i < N; i++)
+		{
+			int blank = 0;
+			bool check[20] = { false, };
+			for (int j = 0; j < N; j++)
+			{
+				if (board[j][i] == 0)
+				{
+					continue;
+				}
+				else
+				{
+					if (blank == 0)
+					{
+						tempboard[blank][i] = board[j][i];
+						blank++;
+					}
+					else
+					{
+						if (check[blank-1] == false && tempboard[blank-1][i] == board[j][i])
+						{
+							tempboard[blank-1][i] = tempboard[blank-1][i] * 2;
+							check[blank-1] = true;
+						}
+						else
+						{
+							tempboard[blank][i] = board[j][i];
+							blank++;
+						}
+					}
+				}
+			}
+		}
+	}
+	else if (move == 4)
+	{
+		for (int i = 0; i < N; i++)
+		{
+			int blank = N - 1;
+			bool check[20] = { false, };
+			for (int j = N - 1; j >= 0; j--)
+			{
+				if (board[j][i] == 0)
+				{
+					continue;
+				}
+				else
+				{
+					if (blank == N - 1)
+					{
+						tempboard[blank][i] = board[j][i];
+						blank--;
+					}
+					else
+					{
+						if (check[blank+1] == false && tempboard[blank+1][i] == board[j][i])
+						{
+							tempboard[blank+1][i] = tempboard[blank+1][i] * 2;
+							check[blank + 1] = true;
+						}
+						else
+						{
+							tempboard[blank][i] = board[j][i];
+							blank--;
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	Solution(n + 1, tempboard, 1);
+
+	Solution(n + 1, tempboard, 2);
+
+	Solution(n + 1, tempboard, 3);
+
+	Solution(n + 1, tempboard, 4);
+}
+
+int main()
+{
+	//입력
+	cin >> N;
+	for (int i = 0; i < N; i++)
+	{
+		for (int j = 0; j < N; j++)
+		{
+			cin >> mainboard[i][j];
+		}
+	}
+	
+	//
+	Solution(0, mainboard, 0);
+
+	//출력
+	cout << answer;
+	return 0;
+}
