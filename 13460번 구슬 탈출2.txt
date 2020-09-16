@@ -1,0 +1,548 @@
+#include <iostream>
+
+using namespace std;
+
+int N, M;
+char board[10][10];
+
+struct Position
+{
+	int y, x;
+};
+Position red, blue;
+
+/*
+# : 벽, 장애물
+O : 구멍의 위치
+R : 빨간 구슬
+B : 파란구슬
+. : 빈칸
+*/
+int answer = 11;
+
+void Solution(int move, Position redm, Position bluem, char boardt[10][10])
+{
+	Position tr, tb;
+	char board[10][10];
+
+	//종료 조건
+	if (move >= answer)
+	{
+		return;
+	}
+	//위로 기울기
+	tr = redm; tb = bluem;
+	for (int i = 0; i < N; i++)
+	{
+		for (int j = 0; j < M; j++) board[i][j] = boardt[i][j];
+	}
+	if (tr.y < tb.y)
+	{
+		int flag = 0;
+		for (int i = tr.y - 1; i >= 0; i--)
+		{
+			//구슬 들어감
+			if (board[i][tr.x] == 'O')
+			{
+				board[tr.y][tr.x] = '.';
+				flag = 1;
+				tr.y = i;
+				break;
+			}
+			else if(board[i][tr.x] == '.')
+			{
+				board[tr.y][tr.x] = '.';
+				tr.y = i;
+				board[tr.y][tr.x] = 'R';
+			}
+			else
+			{
+				break;
+			}
+		}
+		for (int i = tb.y - 1; i >= 0; i--)
+		{
+			//구슬 들어감
+			if (board[i][tb.x] == 'O')
+			{
+				board[tb.y][tb.x] = '.';
+				flag = 2;
+				tb.y = i;
+				break;
+			}
+			else if (board[i][tb.x] == '.')
+			{
+				board[tb.y][tb.x] = '.';
+				tb.y = i;
+				board[tb.y][tb.x] = 'B';
+			}
+			else
+			{
+				break;
+			}
+		}
+		if (flag == 1)
+		{
+			answer = move;
+			return;
+		}
+		else if(flag == 0)
+		{
+			Solution(move + 1, tr, tb, board);
+		}
+	}
+	else
+	{
+		int flag = 0;
+
+		for (int i = tb.y - 1; i >= 0; i--)
+		{
+			//구슬 들어감
+			if (board[i][tb.x] == 'O')
+			{
+				board[tb.y][tb.x] = '.';
+				flag = 2;
+				tb.y = i;
+				break;
+			}
+			else if (board[i][tb.x] == '.')
+			{
+				board[tb.y][tb.x] = '.';
+				tb.y = i;
+				board[tb.y][tb.x] = 'B';
+			}
+			else
+			{
+				break;
+			}
+		}
+		if (flag != 2)
+		{
+			for (int i = tr.y - 1; i >= 0; i--)
+			{
+				//구슬 들어감
+				if (board[i][tr.x] == 'O')
+				{
+					board[tr.y][tr.x] = '.';
+					flag = 1;
+					tr.y = i;
+					break;
+				}
+				else if (board[i][tr.x] == '.')
+				{
+					board[tr.y][tr.x] = '.';
+					tr.y = i;
+					board[tr.y][tr.x] = 'R';
+				}
+				else
+				{
+					break;
+				}
+			}
+			if (flag == 1)
+			{
+				answer = move;
+				return;
+			}
+			else
+			{
+				Solution(move + 1, tr, tb, board);
+			}
+		}
+	}
+	//아래로 기울기
+	tr = redm; tb = bluem;
+	for (int i = 0; i < N; i++)
+	{
+		for (int j = 0; j < M; j++) board[i][j] = boardt[i][j];
+	}
+	if (tr.y > tb.y)
+	{
+		int flag = 0;
+		for (int i = tr.y+1; i < N; i++)
+		{
+			//구슬 들어감
+			if (board[i][tr.x] == 'O')
+			{
+				board[tr.y][tr.x] = '.';
+				flag = 1;
+				tr.y = i;
+				break;
+			}
+			else if (board[i][tr.x] == '.')
+			{
+				board[tr.y][tr.x] = '.';
+				tr.y = i;
+				board[tr.y][tr.x] = 'R';
+			}
+			else
+			{
+				break;
+			}
+		}
+		for (int i = tb.y+1; i < N; i++)
+		{
+			//구슬 들어감
+			if (board[i][tb.x] == 'O')
+			{
+				board[tb.y][tb.x] = '.';
+				flag = 2;
+				tb.y = i;
+				break;
+			}
+			else if (board[i][tb.x] == '.')
+			{
+				board[tb.y][tb.x] = '.';
+				tb.y = i;
+				board[tb.y][tb.x] = 'B';
+			}
+			else
+			{
+				break;
+			}
+		}
+		if (flag == 1)
+		{
+			answer = move;
+			return;
+		}
+		else if (flag == 0)
+		{
+			Solution(move + 1, tr, tb, board);
+		}
+	}
+	else
+	{
+		int flag = 0;
+		
+		for (int i = tb.y + 1; i < N; i++)
+		{
+			//구슬 들어감
+			if (board[i][tb.x] == 'O')
+			{
+				board[tb.y][tb.x] = '.';
+				flag = 2;
+				tb.y = i;
+				break;
+			}
+			else if (board[i][tb.x] == '.')
+			{
+				board[tb.y][tb.x] = '.';
+				tb.y = i;
+				board[tb.y][tb.x] = 'B';
+			}
+			else
+			{
+				break;
+			}
+		}
+		if (flag != 2)
+		{
+			for (int i = tr.y + 1; i < N; i++)
+			{
+				//구슬 들어감
+				if (board[i][tr.x] == 'O')
+				{
+					board[tr.y][tr.x] = '.';
+					flag = 1;
+					tr.y = i;
+					break;
+				}
+				else if (board[i][tr.x] == '.')
+				{
+					board[tr.y][tr.x] = '.';
+					tr.y = i;
+					board[tr.y][tr.x] = 'R';
+				}
+				else
+				{
+					break;
+				}
+			}
+			if (flag == 1)
+			{
+				answer = move;
+				return;
+			}
+			else
+			{
+				Solution(move + 1, tr, tb, board);
+			}
+		}
+	}
+	//오른쪽으로 기울기
+	tr = redm; tb = bluem;
+	for (int i = 0; i < N; i++)
+	{
+		for (int j = 0; j < M; j++) board[i][j] = boardt[i][j];
+	}
+	if (tr.x > tb.x)
+	{
+		int flag = 0;
+		for (int i = tr.x + 1; i < M; i++)
+		{
+			//구슬 들어감
+			if (board[tr.y][i] == 'O')
+			{
+				board[tr.y][tr.x] = '.';
+				flag = 1;
+				tr.x = i;
+				break;
+			}
+			else if (board[tr.y][i] == '.')
+			{
+				board[tr.y][tr.x] = '.';
+				tr.x = i;
+				board[tr.y][tr.x] = 'R';
+			}
+			else
+			{
+				break;
+			}
+		}
+		for (int i = tb.x + 1; i < M; i++)
+		{
+			//구슬 들어감
+			if (board[tb.y][i] == 'O')
+			{
+				board[tb.y][tb.x] = '.';
+				flag = 2;
+				tb.x = i;
+				break;
+			}
+			else if (board[tb.y][i] == '.')
+			{
+				board[tb.y][tb.x] = '.';
+				tb.x = i;
+				board[tb.y][tb.x] = 'B';
+			}
+			else
+			{
+				break;
+			}
+		}
+		if (flag == 1)
+		{
+			answer = move;
+			return;
+		}
+		else if (flag == 0)
+		{
+			Solution(move + 1, tr, tb, board);
+		}
+	}
+	else
+	{
+		int flag = 0;
+		for (int i = tb.x + 1; i < M; i++)
+		{
+			//구슬 들어감
+			if (board[tb.y][i] == 'O')
+			{
+				board[tb.y][tb.x] = '.';
+				flag = 2;
+				tb.x = i;
+				break;
+			}
+			else if (board[tb.y][i] == '.')
+			{
+				board[tb.y][tb.x] = '.';
+				tb.x = i;
+				board[tb.y][tb.x] = 'B';
+			}
+			else
+			{
+				break;
+			}
+		}
+		if (flag != 2)
+		{
+			for (int i = tr.x + 1; i < M; i++)
+			{
+				//구슬 들어감
+				if (board[tr.y][i] == 'O')
+				{
+					board[tr.y][tr.x] = '.';
+					flag = 1;
+					tr.x = i;
+					break;
+				}
+				else if (board[tr.y][i] == '.')
+				{
+					board[tr.y][tr.x] = '.';
+					tr.x = i;
+					board[tr.y][tr.x] = 'R';
+				}
+				else
+				{
+					break;
+				}
+			}
+
+			if (flag == 1)
+			{
+				answer = move;
+				return;
+			}
+			else
+			{
+				Solution(move + 1, tr, tb, board);
+			}
+		}
+	}
+	//왼쪽으로 기울기
+	tr = redm; tb = bluem;
+	for (int i = 0; i < N; i++)
+	{
+		for (int j = 0; j < M; j++) board[i][j] = boardt[i][j];
+	}
+	if (tr.x < tb.x)
+	{
+		int flag = 0;
+		for (int i = tr.x-1; i >=0; i--)
+		{
+			//구슬 들어감
+			if (board[tr.y][i] == 'O')
+			{
+				board[tr.y][tr.x] = '.';
+				flag = 1;
+				tr.x = i;
+				break;
+			}
+			else if (board[tr.y][i] == '.')
+			{
+				board[tr.y][tr.x] = '.';
+				tr.x = i;
+				board[tr.y][tr.x] = 'R';
+			}
+			else
+			{
+				break;
+			}
+		}
+		for (int i = tb.x - 1; i >=0; i--)
+		{
+			//구슬 들어감
+			if (board[tb.y][i] == 'O')
+			{
+				board[tb.y][tb.x] = '.';
+				flag = 2;
+				tb.x = i;
+				break;
+			}
+			else if (board[tb.y][i] == '.')
+			{
+				board[tb.y][tb.x] = '.';
+				tb.x = i;
+				board[tb.y][tb.x] = 'B';
+			}
+			else
+			{
+				break;
+			}
+		}
+		if (flag == 1)
+		{
+			answer = move;
+			return;
+		}
+		else if (flag == 0)
+		{
+			Solution(move + 1, tr, tb, board);
+		}
+	}
+	else
+	{
+		int flag = 0;
+
+		for (int i = tb.x - 1; i >=0; i--)
+		{
+			//구슬 들어감
+			if (board[tb.y][i] == 'O')
+			{
+				board[tb.y][tb.x] = '.';
+				flag = 2;
+				tb.x = i;
+				break;
+			}
+			else if (board[tb.y][i] == '.')
+			{
+				board[tb.y][tb.x] = '.';
+				tb.x = i;
+				board[tb.y][tb.x] = 'B';
+			}
+			else
+			{
+				break;
+			}
+		}
+		if (flag != 2)
+		{
+			for (int i = tr.x - 1; i >= 0; i--)
+			{
+				//구슬 들어감
+				if (board[tr.y][i] == 'O')
+				{
+					board[tr.y][tr.x] = '.';
+					flag = 1;
+					tr.x = i;
+					break;
+				}
+				else if (board[tr.y][i] == '.')
+				{
+					board[tr.y][tr.x] = '.';
+					tr.x = i;
+					board[tr.y][tr.x] = 'R';
+				}
+				else
+				{
+					break;
+				}
+			}
+
+			if (flag == 1)
+			{
+				answer = move;
+				return;
+			}
+			else
+			{
+				Solution(move + 1, tr, tb, board);
+			}
+		}
+	}
+}
+
+int main()
+{
+	//입력
+	cin >> N >> M;
+	for (int i = 0; i < N; i++)
+	{
+		for (int j = 0; j < M; j++)
+		{
+			cin >> board[i][j];
+			if (board[i][j] == 'R')
+			{
+				red.y = i; red.x = j;
+			}
+			else if (board[i][j] == 'B')
+			{
+				blue.y = i; blue.x = j;
+			}
+		}
+	}
+	//
+	Solution(1, red, blue, board);
+
+	//출력
+	if (answer >= 11)
+	{
+		cout << -1;
+	}
+	else
+	{
+		cout << answer;
+	}
+	return 0;
+}
