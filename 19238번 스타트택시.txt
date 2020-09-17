@@ -1,0 +1,258 @@
+#include <iostream>
+#include <deque>
+#include <string.h>
+
+using namespace std;
+
+int N, M, fuel;
+int maps[21][21];
+bool mape[21][21][403] = { false, };
+int cary, carx;
+
+void Solution()
+{
+	for (int i = 0; i < M; i++)
+	{
+		//제일 가까운 승객 찾기
+		struct Position
+		{
+			int y, x, d;
+		};
+		deque<Position> queue;
+		Position car;
+		Position changecar;
+
+		bool checkmap[21][21] = { false, };
+		car.y = cary; car.x = carx; car.d = 0;
+		queue.push_back(car);
+		
+		changecar.d = 9999;
+		changecar.y = 22;
+		changecar.x = 22;
+
+		while (1)
+		{	
+			if (queue.size() == 0)
+			{
+				if (changecar.d == 9999)
+				{
+					fuel = -1;
+				}
+				break;
+			}
+
+			Position temp = queue.front();
+
+			if (temp.y < 1 || temp.y > N || temp.x < 1 || temp.x > N) continue;
+
+			checkmap[temp.y][temp.x] = true;
+			queue.pop_front();
+
+			//종료조건
+			if (changecar.d < temp.d)
+			{
+				break;
+			}
+			if (fuel - temp.d <= 0)
+			{
+				break;
+			}
+			if (maps[temp.y][temp.x] >= 2)
+			{
+				if (changecar.y > temp.y)
+				{
+					changecar = temp;
+				}
+				else if(changecar.y == temp.y)
+				{
+					if (changecar.x > temp.x)
+					{
+						changecar = temp;
+					}
+				}
+			}
+			//상
+			if (temp.y - 1 >= 1)
+			{
+				if (maps[temp.y - 1][temp.x] != 1 && checkmap[temp.y - 1][temp.x] == false)
+				{
+					Position tt;
+					tt = temp; tt.y = tt.y - 1; tt.d = tt.d + 1;
+					checkmap[tt.y][tt.x] = true;
+					queue.push_back(tt);
+				}
+			}
+			//하
+			if (temp.y + 1 <= N)
+			{
+				if (maps[temp.y + 1][temp.x] != 1 && checkmap[temp.y + 1][temp.x] == false)
+				{
+					Position tt;
+					tt = temp; tt.y = tt.y + 1; tt.d = tt.d + 1;
+					checkmap[tt.y][tt.x] = true;
+					queue.push_back(tt);
+				}
+			}
+			//좌
+			if (temp.x - 1 >= 1)
+			{
+				if (maps[temp.y][temp.x-1] != 1 && checkmap[temp.y][temp.x-1] == false)
+				{
+					Position tt;
+					tt = temp; tt.x = tt.x - 1; tt.d = tt.d + 1;
+					checkmap[tt.y][tt.x] = true;
+					queue.push_back(tt);
+				}
+			}
+			//우
+			if (temp.x + 1 <= N)
+			{
+				if (maps[temp.y][temp.x+1] != 1 && checkmap[temp.y][temp.x+1] == false)
+				{
+					Position tt;
+					tt = temp; tt.x = tt.x+1; tt.d = tt.d + 1;
+					checkmap[tt.y][tt.x] = true;
+					queue.push_back(tt);
+				}
+			}
+		}
+		fuel = fuel - changecar.d;
+		if (fuel <= 0)
+		{
+			fuel = -1;
+			break;
+		}
+
+		cary = changecar.y; carx = changecar.x;
+		changecar.d = 0;
+		memset(checkmap, 0, sizeof(checkmap));
+		
+		//승객 태워다 주기
+		deque<Position> queue1;
+		
+		queue1.push_back(changecar);
+		
+		int end = maps[cary][carx];
+		maps[cary][carx] = 0;
+		
+		while (1)
+		{
+			if (queue1.size() == 0)
+			{
+				fuel = -1; break;
+			}
+
+			Position temp = queue1.front();
+			queue1.pop_front();
+			checkmap[temp.y][temp.x] = true;
+
+			if (mape[temp.y][temp.x][end] == true)
+			{
+				cary = temp.y; carx = temp.x;
+				mape[cary][carx][end] = false;
+				fuel = fuel - temp.d;
+				if (fuel < 0)
+				{
+					break;
+				}
+				else
+				{
+					fuel = fuel + (temp.d * 2);
+					break;
+				}
+			}
+			if (fuel - temp.d < 0)
+			{
+				fuel = -1;
+				break;
+			}
+
+			//상
+			if (temp.y - 1 >= 1)
+			{
+				if (mape[temp.y - 1][temp.x][1] == false && checkmap[temp.y - 1][temp.x] == false)
+				{
+					Position tt;
+					tt = temp; tt.y = tt.y - 1; tt.d = tt.d + 1;
+					checkmap[tt.y][tt.x] = true;
+					queue1.push_back(tt);
+				}
+			}
+			//하
+			if (temp.y + 1 <= N)
+			{
+				if (mape[temp.y + 1][temp.x][1] == false && checkmap[temp.y + 1][temp.x] == false)
+				{
+					Position tt;
+					tt = temp; tt.y = tt.y + 1; tt.d = tt.d + 1;
+					checkmap[tt.y][tt.x] = true;
+					queue1.push_back(tt);
+				}
+			}
+			//좌
+			if (temp.x - 1 >= 1)
+			{
+				if (mape[temp.y][temp.x - 1][1] == false && checkmap[temp.y][temp.x - 1] == false)
+				{
+					Position tt;
+					tt = temp; tt.x = tt.x - 1; tt.d = tt.d + 1;
+					checkmap[tt.y][tt.x] = true;
+					queue1.push_back(tt);
+				}
+			}
+			//우
+			if (temp.x + 1 <= N)
+			{
+				if (mape[temp.y][temp.x + 1][1] == false && checkmap[temp.y][temp.x + 1] == false)
+				{
+					Position tt;
+					tt = temp; tt.x = tt.x + 1; tt.d = tt.d + 1;
+					checkmap[tt.y][tt.x] = true;
+					queue1.push_back(tt);
+				}
+			}
+		}
+		if (fuel < 0)
+		{
+			break;
+		}
+	}
+	return;
+}
+
+int main()
+{
+	//입력
+	cin >> N >> M >> fuel;
+	for (int i = 1; i <= N; i++)
+	{
+		for (int j = 1; j <= N; j++)
+		{
+			cin >> maps[i][j];
+			mape[i][j][maps[i][j]] = true;
+		}
+	}
+	cin >> cary >> carx;
+	for (int i = 2; i <= M+1; i++)
+	{
+		int starty, startx, endy, endx;
+		cin >> starty >> startx >> endy >> endx;
+		maps[starty][startx] = i;
+		mape[endy][endx][i] = true;
+	}
+	//
+	if (fuel > 0)
+	{
+		Solution();
+	}
+
+	//출력
+	if (fuel < 0)
+	{
+		cout << -1;
+	}
+	else
+	{
+		cout << fuel;
+	}
+}
